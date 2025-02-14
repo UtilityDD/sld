@@ -22,8 +22,11 @@
 <body>
     
     <div class="container">
+        
         <button id="menuBtn" style="position: absolute; top: 15px; left: 30px; z-index: 1000;">Symbol</button>
         <button id="addTextBox" style="position: absolute; top: 15px; left: 100px; z-index: 1000;">Add Text Box</button>
+        <button id="addNetworkBtn" style="position: absolute; top: 15px; left: 200px; z-index: 1000;">Add New Network</button>
+
 
 <div id="menuList" style="display: none; position: absolute; top: 40px; left: 10px; background: white; padding: 10px; border: 1px solid #ddd;">
     <button class="symbolBtn" data-symbol="🌳">Tree</button>
@@ -59,12 +62,35 @@
     <option value="portrait">Portrait</option>
     <option value="landscape">Landscape</option>
 </select>
-
+<button id="resetBtn" style="position: absolute; top: 15px; right: 240px; z-index: 1000;">Reset</button>
 <button id="savePngBtn" style="position: absolute; top: 15px; right: 135px; z-index: 1000;">Save as PNG</button>
 <button id="savePdfBtn" style="position: absolute; top: 15px; right: 30px; z-index: 1000;">Save as PDF</button>
 
+<script>
+    document.getElementById("resetBtn").addEventListener("click", () => {
+        location.reload();
+    });
+
+    document.getElementById("addNetworkBtn").addEventListener("click", function() {
+    // Default position for the new node
+    const newNode = { 
+        id: nodes.length + 1, 
+        x: 300, // Adjust as needed for blank space
+        y: 300, // Adjust as needed for blank space
+        text: "8m", 
+        color: "gray" 
+    };
+
+    nodes.push(newNode);
+    drawDiagram(); // Redraw to reflect changes
+});
+
+
+
+</script>
 
     <button id="deleteNodeBtn" class="control-btn">Delete</button>
+    
     <script>
         const svg = d3.select("#diagram");
         const container = svg.append("g");
@@ -144,6 +170,29 @@ container.selectAll(".line").data(links).enter()
     .on("click", (event, d) => {
         d.dashed = !d.dashed;
         drawDiagram();
+    })
+    .on("dblclick", (event, d) => {
+        // Create a color input element
+        const colorPicker = document.createElement("input");
+        colorPicker.type = "color";
+        colorPicker.style.position = "absolute";
+        colorPicker.style.left = `${event.pageX}px`;
+        colorPicker.style.top = `${event.pageY}px`;
+        colorPicker.value = d.color; // Set current color
+
+        document.body.appendChild(colorPicker);
+        colorPicker.focus();
+
+        // Update color on selection
+        colorPicker.addEventListener("input", () => {
+            d.color = colorPicker.value;
+            drawDiagram();
+        });
+
+        // Remove color picker when focus is lost
+        colorPicker.addEventListener("blur", () => {
+            document.body.removeChild(colorPicker);
+        });
     });
 
 
@@ -232,9 +281,28 @@ container.selectAll(".link-label").data(links).enter()
                     setTimeout(hideButtons, 2000);
                 })
                 .on("dblclick", (event, d) => {
-                    d.color = prompt("Change color:", d.color) || d.color;
-                    drawDiagram();
-                });
+    // Create a color input element
+    const colorPicker = document.createElement("input");
+    colorPicker.type = "color";
+    colorPicker.style.position = "absolute";
+    colorPicker.style.left = `${event.pageX}px`;
+    colorPicker.style.top = `${event.pageY}px`;
+    colorPicker.value = d.color; // Set current color
+
+    document.body.appendChild(colorPicker);
+    colorPicker.focus();
+
+    // Update color on selection
+    colorPicker.addEventListener("input", () => {
+        d.color = colorPicker.value;
+        drawDiagram();
+    });
+
+    // Remove color picker when focus is lost
+    colorPicker.addEventListener("blur", () => {
+        document.body.removeChild(colorPicker);
+    });
+});
 
                 nodeElements.append("circle")
     .attr("r", 20)
@@ -767,6 +835,8 @@ function moveToolbar(textBox) {
             isDragging = false;
             legendTable.style.cursor = "grab";
         });
+
+
     </script>
     
 
