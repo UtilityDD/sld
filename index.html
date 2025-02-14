@@ -20,7 +20,23 @@
     </style>
 </head>
 <body>
+    
     <div class="container">
+        <button id="menuBtn" style="position: absolute; top: 15px; left: 30px; z-index: 1000;">Symbol</button>
+        <button id="addTextBox" style="position: absolute; top: 15px; left: 100px; z-index: 1000;">Add Text Box</button>
+
+<div id="menuList" style="display: none; position: absolute; top: 40px; left: 10px; background: white; padding: 10px; border: 1px solid #ddd;">
+    <button class="symbolBtn" data-symbol="🌳">Tree</button>
+    <button class="symbolBtn" data-symbol="🛕">Mandir</button>
+    <button class="symbolBtn" data-symbol="🕌">Masjid</button>
+    <button class="symbolBtn" data-symbol="🏫">School</button>
+    <button class="symbolBtn" data-symbol="🏢">Office</button>
+    <button class="symbolBtn" data-symbol="🌊">Pond</button>
+    <button class="symbolBtn" data-symbol="⍊">Earthing</button>
+<button class="symbolBtn" data-symbol="📌">Stay Set</button>
+<button class="symbolBtn" data-symbol="🔌">Extension</button>
+
+</div>
         <svg id="diagram" width="2000" height="2000"></svg>
     </div>
     
@@ -44,8 +60,8 @@
     <option value="landscape">Landscape</option>
 </select>
 
-<button id="savePngBtn" style="position: absolute; top: 10px; right: 100px; z-index: 1000;">Save as PNG</button>
-<button id="savePdfBtn" style="position: absolute; top: 10px; right: 10px; z-index: 1000;">Save as PDF</button>
+<button id="savePngBtn" style="position: absolute; top: 15px; right: 135px; z-index: 1000;">Save as PNG</button>
+<button id="savePdfBtn" style="position: absolute; top: 15px; right: 30px; z-index: 1000;">Save as PDF</button>
 
 
     <button id="deleteNodeBtn" class="control-btn">Delete</button>
@@ -67,31 +83,137 @@
         let selectedNode = null;
 
         let nodes = [
-            { id: 1, x: 200, y: 100, text: "DP", color: "gray" },
-            { id: 2, x: 400, y: 100, text: "TP", color: "gray" },
-            { id: 3, x: 600, y: 100, text: "8m", color: "gray" },
-            { id: 4, x: 800, y: 100, text: "9m", color: "gray" },
-            { id: 5, x: 500, y: 300, text: "DTR", shape: "rect", color: "gray" }
+            { id: 1, x: 500, y: 200, text: "DP", color: "gray" },
+            { id: 2, x: 600, y: 250, text: "TP", color: "gray" },
+            { id: 3, x: 800, y: 270, text: "8m", color: "gray" },
+            { id: 4, x: 1000, y: 200, text: "9m", color: "gray" },
+            { id: 5, x: 700, y: 600, text: "DTR", shape: "rect", color: "gray" }
         ];
         let links = [
-            { source: 1, target: 2, color: "black" },
-            { source: 2, target: 3, color: "black" },
-            { source: 3, target: 4, color: "black" },
-            { source: 2, target: 5, color: "black" }
-        ];
+    { source: 1, target: 2, color: "black", text: "label", x: 300, y: 100, rotate: 0 },
+    { source: 2, target: 3, color: "black", text: "label", x: 500, y: 100, rotate: 0 },
+    { source: 3, target: 4, color: "black", text: "label", x: 700, y: 100, rotate: 0 },
+    { source: 2, target: 5, color: "black", text: "label", x: 450, y: 250, rotate: 0 }
+];
 
-        function drawDiagram() {
+
+document.getElementById("menuBtn").addEventListener("click", () => {
+    const menuList = document.getElementById("menuList");
+    menuList.style.display = menuList.style.display === "none" ? "block" : "none";
+});
+
+svg.on("click", (event) => {
+    if (!selectedSymbol) return;
+
+    const transform = d3.zoomTransform(svg.node()); // Get current zoom & pan transform
+    const [mouseX, mouseY] = transform.invert(d3.pointer(event)); // Convert to transformed coordinates
+
+    const newSymbol = { id: nodes.length + 1, x: mouseX, y: mouseY, text: selectedSymbol, color: "white" };
+    nodes.push(newSymbol);
+    selectedSymbol = null;
+    drawDiagram(); // Redraw with the new symbol
+});
+
+
+let selectedSymbol = null;
+
+document.querySelectorAll(".symbolBtn").forEach(button => {
+    button.addEventListener("click", (event) => {
+        selectedSymbol = event.target.dataset.symbol; // Store selected symbol for placement on click
+    });
+});
+
+   
+function drawDiagram() {
             container.selectAll("*").remove(); // Clear previous elements
 
             // Draw links
-            container.selectAll(".line").data(links).enter()
-                .append("line")
-                .attr("class", "line")
-                .attr("x1", d => nodes.find(n => n.id === d.source).x)
-                .attr("y1", d => nodes.find(n => n.id === d.source).y)
-                .attr("x2", d => nodes.find(n => n.id === d.target).x)
-                .attr("y2", d => nodes.find(n => n.id === d.target).y)
-                .attr("stroke", d => d.color);
+// Draw links with toggling line type on click
+// Draw links with toggling line type on click and pointer change
+container.selectAll(".line").data(links).enter()
+    .append("line")
+    .attr("class", "line")
+    .attr("x1", d => nodes.find(n => n.id === d.source).x)
+    .attr("y1", d => nodes.find(n => n.id === d.source).y)
+    .attr("x2", d => nodes.find(n => n.id === d.target).x)
+    .attr("y2", d => nodes.find(n => n.id === d.target).y)
+    .attr("stroke", d => d.color)
+    .attr("stroke-width", 2)
+    .attr("stroke-dasharray", d => d.dashed ? "5,5" : "0") // Toggle dashed/solid
+    .style("cursor", "pointer") // Change cursor to pointer when hovering
+    .on("click", (event, d) => {
+        d.dashed = !d.dashed;
+        drawDiagram();
+    });
+
+
+// Draw labels for links
+const linkLabels = container.selectAll(".link-label").data(links).enter()
+    .append("g") // Group for text + transform
+    .attr("class", "link-label")
+    .each(function (d) {
+        const x1 = nodes.find(n => n.id === d.source).x;
+        const y1 = nodes.find(n => n.id === d.source).y;
+        const x2 = nodes.find(n => n.id === d.target).x;
+        const y2 = nodes.find(n => n.id === d.target).y;
+
+        // Default position & rotation
+        d.x = (x1 + x2) / 2;
+        d.y = (y1 + y2) / 2;
+        d.rotate = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+
+        d3.select(this)
+            .attr("transform", `translate(${d.x},${d.y}) rotate(${d.rotate})`);
+    });
+
+// Add editable text inside the label group
+linkLabels.append("text")
+    .attr("text-anchor", "middle")
+    .attr("dy", -5)
+    .text(d => d.text || "Label") // Default label text
+    .attr("fill", "black")
+    .on("click", (event, d) => {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = d.text || "";
+        input.style.position = "absolute";
+        input.style.left = `${event.pageX}px`;
+        input.style.top = `${event.pageY}px`;
+        document.body.appendChild(input);
+        input.focus();
+        input.addEventListener("blur", () => {
+            d.text = input.value;
+            document.body.removeChild(input);
+            drawDiagram();
+        });
+    });
+
+
+                // Draw labels for links
+container.selectAll(".link-label").data(links).enter()
+    .append("text")
+    .attr("class", "link-label")
+    .attr("x", d => (nodes.find(n => n.id === d.source).x + nodes.find(n => n.id === d.target).x) / 2)
+    .attr("y", d => (nodes.find(n => n.id === d.source).y + nodes.find(n => n.id === d.target).y) / 2 - 5)
+    .attr("text-anchor", "middle")
+    .attr("fill", "blue")
+    .text(d => d.text || "Label") // Default label
+    .on("click", (event, d) => {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = d.text || "";
+        input.style.position = "absolute";
+        input.style.left = `${event.pageX}px`;
+        input.style.top = `${event.pageY}px`;
+        document.body.appendChild(input);
+        input.focus();
+        input.addEventListener("blur", () => {
+            d.text = input.value; // Save the new label
+            document.body.removeChild(input);
+            drawDiagram();
+        });
+    });
+
 
             // Draw nodes
             const nodeElements = container.selectAll(".node").data(nodes).enter().append("g")
@@ -101,6 +223,7 @@
                     .on("drag", (event, d) => {
                         d.x = event.x; d.y = event.y;
                         drawDiagram();
+
                     })
                 )
                 .on("click", (event, d) => {
@@ -113,10 +236,10 @@
                     drawDiagram();
                 });
 
-            nodeElements.append("circle")
-                .attr("r", 20)
-                .attr("fill", d => d.color)
-                .attr("stroke", "black");
+                nodeElements.append("circle")
+    .attr("r", 20)
+    .attr("fill", d => d.text.match(/[\uD800-\uDFFF]/) ? "none" : d.color) // Transparent for symbols
+    .attr("stroke", "none");
 
             nodeElements.append("text")
                 .attr("text-anchor", "middle")
@@ -141,18 +264,27 @@
         }
 
         function positionButtons(x, y, node) {
-            addNodeBtn.style.left = `${x + 20}px`;
-            addNodeBtn.style.top = `${y}px`;
-            addNodeBtn.style.display = "block";
+    if (node.text.match(/[\uD800-\uDFFF]/)) {
+        deleteNodeBtn.style.left = `${x - 50}px`;
+        deleteNodeBtn.style.top = `${y}px`;
+        deleteNodeBtn.style.display = "block"; // Allow deleting symbols
+        addNodeBtn.style.display = "none";
+        return;
+    }
 
-            if (!links.some(link => link.source === node.id)) {
-                deleteNodeBtn.style.left = `${x - 50}px`;
-                deleteNodeBtn.style.top = `${y}px`;
-                deleteNodeBtn.style.display = "block";
-            } else {
-                deleteNodeBtn.style.display = "none";
-            }
-        }
+    addNodeBtn.style.left = `${x + 20}px`;
+    addNodeBtn.style.top = `${y}px`;
+    addNodeBtn.style.display = "block";
+
+    if (!links.some(link => link.source === node.id)) {
+        deleteNodeBtn.style.left = `${x - 50}px`;
+        deleteNodeBtn.style.top = `${y}px`;
+        deleteNodeBtn.style.display = "block";
+    } else {
+        deleteNodeBtn.style.display = "none";
+    }
+}
+
 
         addNodeBtn.addEventListener("click", () => {
             if (selectedNode) {
@@ -202,28 +334,302 @@
     }
 
     function saveAsImage(format, width, height, orientation) {
-        const container = document.querySelector(".container"); // Capture only the diagram area
+    const container = document.querySelector(".container");
+    const menuBtn = document.getElementById("menuBtn");
+    const addTextBoxBtn = document.getElementById("addTextBox");
+    const legendTable = document.getElementById("legendTable");
+    const textBoxes = document.querySelectorAll(".text-box");
 
-        html2canvas(container, { backgroundColor: "#ffffff" }).then(canvas => {
-            if (format === "png") {
-                const link = document.createElement("a");
-                link.href = canvas.toDataURL("image/png");
-                link.download = `diagram_${width}x${height}_${orientation}.png`;
-                link.click();
-            } else if (format === "pdf") {
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({
-                    orientation: orientation,
-                    unit: "mm",
-                    format: [width, height]
-                });
+    // Temporarily move the legend and text boxes into the container
+    container.appendChild(legendTable);
+    textBoxes.forEach(textBox => container.appendChild(textBox));
 
-                const imgData = canvas.toDataURL("image/png");
-                pdf.addImage(imgData, "PNG", 10, 10, width - 20, height - 20);
+    // Hide buttons before capturing
+    menuBtn.style.display = "none";
+    addTextBoxBtn.style.display = "none";
+
+    html2canvas(container, { backgroundColor: "#ffffff", scale: 3 }).then(canvas => {
+        if (format === "png") {
+            const link = document.createElement("a");
+            link.href = canvas.toDataURL("image/png");
+            link.download = `diagram_${width}x${height}_${orientation}.png`;
+            link.click();
+        } else if (format === "pdf") {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: orientation,
+                unit: "mm",
+                format: [width, height]
+            });
+
+            const imgData = canvas.toDataURL("image/png");
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // Maintain aspect ratio
+
+            pdf.addImage(imgData, "PNG", 10, 10, pdfWidth - 20, pdfHeight - 20);
+
+            // Capture the legend separately if needed
+            html2canvas(legendTable, { backgroundColor: "#ffffff", scale: 3 }).then(legendCanvas => {
+                const legendImg = legendCanvas.toDataURL("image/png");
+                pdf.addImage(legendImg, "PNG", pdfWidth - 80, 10, 70, 60); // Adjust position & size
+
                 pdf.save(`diagram_${width}x${height}_${orientation}.pdf`);
+                
+                // Restore legend and text boxes to original positions
+                document.body.appendChild(legendTable);
+                textBoxes.forEach(textBox => document.body.appendChild(textBox));
+            });
+        } else {
+            document.body.appendChild(legendTable);
+            textBoxes.forEach(textBox => document.body.appendChild(textBox));
+        }
+
+        // Restore buttons and text boxes
+        menuBtn.style.display = "block";
+        addTextBoxBtn.style.display = "block";
+    });
+}
+
+
+
+document.getElementById("addTextBox").addEventListener("click", () => {
+    const textBox = document.createElement("div");
+    textBox.className = "text-box";
+    textBox.contentEditable = true;
+    textBox.textContent = "Type here...";
+
+    Object.assign(textBox.style, {
+        position: "absolute",
+        top: `${Math.random() * 400 + 50}px`, // Random position to prevent overlap
+        left: `${Math.random() * 400 + 50}px`,
+        background: "none",
+        padding: "5px",
+        border: "1px solid transparent", // Initially hidden
+        cursor: "move",
+        width: "150px",
+        minHeight: "30px",
+        overflow: "auto",
+        outline: "none"
+    });
+
+    // Create a resize handle
+    const resizeHandle = document.createElement("div");
+    Object.assign(resizeHandle.style, {
+        width: "10px",
+        height: "10px",
+        background: "black",
+        position: "absolute",
+        bottom: "0",
+        right: "0",
+        cursor: "se-resize",
+        display: "none" // Initially hidden
+    });
+
+    // Create a delete button
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-btn";
+    deleteBtn.textContent = "Delete";
+    Object.assign(deleteBtn.style, {
+        position: "absolute",
+        background: "red",
+        color: "white",
+        border: "none",
+        padding: "5px",
+        cursor: "pointer",
+        display: "none",
+        zIndex: "1000"
+    });
+
+    deleteBtn.addEventListener("click", () => {
+        textBox.remove();
+        deleteBtn.remove();
+        document.querySelectorAll(".toolbar").forEach(el => el.remove());
+    });
+
+    textBox.appendChild(resizeHandle);
+    document.body.appendChild(textBox);
+    document.body.appendChild(deleteBtn);
+
+    makeDraggable(textBox);
+    makeResizable(textBox, resizeHandle);
+    
+    // Show toolbar, border, resize handle, and delete button on click
+    textBox.addEventListener("click", (event) => {
+        event.stopPropagation(); // Prevent hiding when clicking inside
+        textBox.style.border = "1px solid black"; // Show border
+        resizeHandle.style.display = "block"; // Show resize handle
+        addToolbar(textBox);
+
+        // Position and show delete button
+        deleteBtn.style.left = `${parseInt(textBox.style.left) + parseInt(textBox.style.width) + 10}px`;
+        deleteBtn.style.top = `${parseInt(textBox.style.top)}px`;
+        deleteBtn.style.display = "block";
+    });
+
+    // Hide toolbar, border, resize handle, and delete button when clicking outside
+    document.addEventListener("click", (event) => {
+        if (!textBox.contains(event.target) && !document.querySelector(".toolbar")?.contains(event.target) && event.target !== deleteBtn) {
+            document.querySelectorAll(".toolbar").forEach(el => el.remove());
+            textBox.style.border = "1px solid transparent"; // Hide border
+            resizeHandle.style.display = "none"; // Hide resize handle
+            deleteBtn.style.display = "none"; // Hide delete button
+        }
+    });
+});
+
+
+
+
+// Function to make text box draggable
+function makeDraggable(element) {
+    let offsetX, offsetY, isDragging = false;
+
+    element.addEventListener("mousedown", (event) => {
+        if (event.target !== element) return; // Prevent dragging while resizing
+        isDragging = true;
+        offsetX = event.clientX - element.getBoundingClientRect().left;
+        offsetY = event.clientY - element.getBoundingClientRect().top;
+        element.style.zIndex = 1000;
+    });
+
+    document.addEventListener("mousemove", (event) => {
+        if (isDragging) {
+            element.style.left = event.clientX - offsetX + "px";
+            element.style.top = event.clientY - offsetY + "px";
+            moveToolbar(element);
+        }
+    });
+
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+    });
+}
+
+// Function to make text box resizable
+function makeResizable(element, handle) {
+    let isResizing = false;
+
+    handle.addEventListener("mousedown", (event) => {
+        isResizing = true;
+        event.stopPropagation(); // Prevent triggering drag
+    });
+
+    document.addEventListener("mousemove", (event) => {
+        if (isResizing) {
+            element.style.width = event.clientX - element.getBoundingClientRect().left + "px";
+            element.style.height = event.clientY - element.getBoundingClientRect().top + "px";
+            moveToolbar(element);
+        }
+    });
+
+    document.addEventListener("mouseup", () => {
+        isResizing = false;
+    });
+}
+
+// Function to add text formatting toolbar (only appears on click)
+function addToolbar(textBox) {
+    // Remove any existing toolbar
+    document.querySelectorAll(".toolbar").forEach(el => el.remove());
+
+    const toolbar = document.createElement("div");
+    toolbar.className = "toolbar";
+
+    Object.assign(toolbar.style, {
+        position: "absolute",
+        top: `${parseInt(textBox.style.top) - 35}px`,
+        left: textBox.style.left,
+        background: "#f0f0f0",
+        padding: "5px",
+        border: "1px solid black",
+        display: "flex",
+        gap: "5px"
+    });
+
+    // Create formatting buttons
+    const boldBtn = createFormatButton("B", "bold");
+    const italicBtn = createFormatButton("I", "italic");
+    const underlineBtn = createFormatButton("U", "underline");
+    const fontSizeBtn = createFontSizeDropdown();
+    const alignBtn = createAlignDropdown();
+
+    toolbar.appendChild(boldBtn);
+    toolbar.appendChild(italicBtn);
+    toolbar.appendChild(underlineBtn);
+    toolbar.appendChild(fontSizeBtn);
+    toolbar.appendChild(alignBtn);
+
+    document.body.appendChild(toolbar);
+
+    function createFormatButton(label, command) {
+        const btn = document.createElement("button");
+        btn.textContent = label;
+        btn.style.padding = "5px";
+        btn.style.cursor = "pointer";
+        btn.style.border = "1px solid black";
+        btn.style.background = "white";
+
+        btn.addEventListener("click", () => {
+            document.execCommand(command, false, null);
+        });
+
+        return btn;
+    }
+
+    function createFontSizeDropdown() {
+        const select = document.createElement("select");
+        [12, 14, 16, 18, 20, 24, 28, 32].forEach(size => {
+            const option = document.createElement("option");
+            option.value = size;
+            option.textContent = size + "px";
+            select.appendChild(option);
+        });
+
+        select.addEventListener("change", () => {
+            document.execCommand("fontSize", false, "7");
+            document.querySelectorAll("font[size='7']").forEach(font => {
+                font.removeAttribute("size");
+                font.style.fontSize = select.value + "px";
+            });
+        });
+
+        return select;
+    }
+
+    function createAlignDropdown() {
+        const select = document.createElement("select");
+        [["Left", "left"], ["Center", "center"], ["Right", "right"]].forEach(([label, value]) => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = label;
+            select.appendChild(option);
+        });
+
+        select.addEventListener("change", () => {
+            document.execCommand("justify" + select.value.charAt(0).toUpperCase() + select.value.slice(1));
+        });
+
+        return select;
+    }
+
+    // Hide toolbar when clicking outside of text box or toolbar
+    setTimeout(() => {
+        document.addEventListener("click", (event) => {
+            if (!toolbar.contains(event.target) && !textBox.contains(event.target)) {
+                toolbar.remove();
             }
         });
+    }, 100);
+}
+
+// Function to move toolbar when dragging/resizing
+function moveToolbar(textBox) {
+    const toolbar = document.querySelector(".toolbar");
+    if (toolbar) {
+        toolbar.style.top = `${parseInt(textBox.style.top) - 35}px`;
+        toolbar.style.left = textBox.style.left;
     }
+}
 
     // Attach event listeners AFTER defining the functions
     document.getElementById("savePngBtn").addEventListener("click", function () {
@@ -232,10 +638,140 @@
     });
 
     document.getElementById("savePdfBtn").addEventListener("click", function () {
-        const { width, height, orientation } = selectPageSizeAndOrientation();
-        saveAsImage("pdf", width, height, orientation);
+    const container = document.querySelector(".container");
+    const menuBtn = document.getElementById("menuBtn");
+    const addTextBoxBtn = document.getElementById("addTextBox");
+
+    // Hide buttons before capturing
+    menuBtn.style.display = "none";
+    addTextBoxBtn.style.display = "none";
+
+    // Move text boxes into the container for capture
+    const textBoxes = document.querySelectorAll(".text-box");
+    textBoxes.forEach(textBox => container.appendChild(textBox));
+
+    html2canvas(container, {
+        backgroundColor: "#ffffff",
+        scale: 3 // Increases resolution for better PDF quality
+    }).then(canvas => {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+            orientation: "landscape",
+            unit: "mm",
+            format: "a4"
+        });
+
+        const imgData = canvas.toDataURL("image/png");
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // Maintain aspect ratio
+
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+        pdf.save("diagram.pdf");
+
+        // Restore buttons and text boxes after saving
+        menuBtn.style.display = "block";
+        addTextBoxBtn.style.display = "block";
+        textBoxes.forEach(textBox => document.body.appendChild(textBox));
     });
+});
+
+
+
 </script>
+<script>
+   // document.getElementById("addTextBox").addEventListener("click", () => {
+        const textBox = document.createElement("div");
+        textBox.className = "text-box";
+        textBox.contentEditable = true;
+        textBox.textContent = "Type here...";
+        
+        Object.assign(textBox.style, {
+            position: "absolute",
+            top: "100px",
+            left: "100px",
+            background: "white",
+            padding: "5px",
+            border: "1px solid black",
+            cursor: "move",
+            width: "150px",
+            minHeight: "30px"
+        });
+
+        document.body.appendChild(textBox);
+        makeDraggable(textBox);
+    });
+
+    function makeDraggable(element) {
+        let offsetX, offsetY, isDragging = false;
+
+        element.addEventListener("mousedown", (event) => {
+            isDragging = true;
+            offsetX = event.clientX - element.getBoundingClientRect().left;
+            offsetY = event.clientY - element.getBoundingClientRect().top;
+            element.style.zIndex = 1000;
+        });
+
+        document.addEventListener("mousemove", (event) => {
+            if (isDragging) {
+                element.style.left = event.clientX - offsetX + "px";
+                element.style.top = event.clientY - offsetY + "px";
+            }
+        });
+
+        document.addEventListener("mouseup", () => {
+            isDragging = false;
+        });
+    }
+</script>
+    <!-- Your existing content -->
+    
+    <div id="legendTable" style="position: absolute; top: 250px; left: 150px; background: none; padding: 10px; cursor: grab; display: inline-block; z-index: 1;">
+        <h3 id="legendHeader" style="margin: 5; cursor: grab;">Legend</h3>
+        <table style="border-collapse: collapse; text-align: left; width: auto;">
+            <tr style="border-bottom: 1px solid gray;"><th>Text⠀⠀</th><th>Meaning</th></tr>
+            <tr style="border-bottom: 1px solid gray;"><td>DTR</td><td>Transformer Structure</td></tr>
+            <tr style="border-bottom: 1px solid gray;"><td>DP</td><td>Double Pole</td></tr>
+            <tr style="border-bottom: 1px solid gray;"><td>TP</td><td>Triple Pole</td></tr>
+            <tr style="border-bottom: 1px solid gray;"><td>4P</td><td>Four Pole</td></tr>
+            <tr style="border-bottom: 1px solid gray;"><td>HP</td><td>H Beam Pole</td></tr>
+            <tr style="border-bottom: 1px solid gray;"><td>RP</td><td>Rail Pole</td></tr>
+            <tr style="border-bottom: 1px solid gray;"><td>E</td><td>Earthing</td></tr>
+            <tr style="border-bottom: 1px solid gray;"><td>S</td><td>Stay Set</td></tr>
+            <tr style="border-bottom: 1px solid gray;"><td>8m</td><td>8m Pole</td></tr>
+            <tr style="border-bottom: 1px solid gray;"><td>9m</td><td>9m Pole</td></tr>
+        </table>
+    </div>
+    
+    <script>
+        // Make the table draggable only when clicking on the "Legend" header
+        const legendTable = document.getElementById("legendTable");
+        const legendHeader = document.getElementById("legendHeader");
+        let isDragging = false, offsetX, offsetY;
+        
+        legendHeader.addEventListener("mousedown", (event) => {
+            isDragging = true;
+            legendTable.style.cursor = "grabbing";
+            offsetX = event.clientX - legendTable.getBoundingClientRect().left;
+            offsetY = event.clientY - legendTable.getBoundingClientRect().top;
+            event.stopPropagation(); // Prevent canvas panning
+        });
+        
+        document.addEventListener("mousemove", (event) => {
+            if (isDragging) {
+                legendTable.style.left = event.clientX - offsetX + "px";
+                legendTable.style.top = event.clientY - offsetY + "px";
+            }
+        });
+        
+        document.addEventListener("mouseup", () => {
+            isDragging = false;
+            legendTable.style.cursor = "grab";
+        });
+    </script>
+    
+
+</body>
+</html>
 
 </body>
 </html>
