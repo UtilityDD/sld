@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Electrical Diagram</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+ <!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/svg2pdf.js/1.3.4/svg2pdf.min.js"></script>
+
+    <style>
+        body { font-family: Arial, sans-serif; overflow: hidden; }
+        .container { width: 100vw; height: 100vh; overflow: auto; position: relative; }
+        svg { border: 1px solid #ddd; background: white; cursor: grab; }
+        .node { cursor: pointer; }
+        .line { stroke-width: 2px; }
+        .control-btn { position: absolute; background: #f00; color: white; border: none; padding: 5px; cursor: pointer; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <svg id="diagram" width="2000" height="2000"></svg>
+    </div>
+    
+    <button id="addNodeBtn" class="control-btn">Add</button>
+    
+<!-- Save Buttons -->
+ <!-- Dropdowns for Paper Size and Orientation -->
+<label for="paperSize">Paper Size:</label>
+<select id="paperSize">
+    <option value="A4">A4</option>
+    <option value="A3">A3</option>
+    <option value="A5">A5</option>
+    <option value="A2">A2</option>
+    <option value="A1">A1</option>
+    <option value="A0">A0</option>
+</select>
+
+<label for="orientation">Orientation:</label>
+<select id="orientation">
+    <option value="portrait">Portrait</option>
+    <option value="landscape">Landscape</option>
+</select>
+
+<button id="savePngBtn" style="position: absolute; top: 10px; right: 100px; z-index: 1000;">Save as PNG</button>
+<button id="savePdfBtn" style="position: absolute; top: 10px; right: 10px; z-index: 1000;">Save as PDF</button>
+
+
+    <button id="deleteNodeBtn" class="control-btn">Delete</button>
+    <script>
+        const svg = d3.select("#diagram");
+        const container = svg.append("g");
+
+        // Enable zoom and pan
+        const zoom = d3.zoom()
+            .scaleExtent([0.5, 2]) // Min and max zoom levels
+            .on("zoom", (event) => {
+                container.attr("transform", event.transform);
+            });
+
+        svg.call(zoom);
+
+        const addNodeBtn = document.getElementById("addNodeBtn");
+        const deleteNodeBtn = document.getElementById("deleteNodeBtn");
+        let selectedNode = null;
+
+        let nodes = [
+            { id: 1, x: 200, y: 100, text: "DP", color: "gray" },
+            { id: 2, x: 400, y: 100, text: "TP", color: "gray" },
+            { id: 3, x: 600, y: 100, text: "8m", color: "gray" },
+            { id: 4, x: 800, y: 100, text: "9m", color: "gray" },
+            { id: 5, x: 500, y: 300, text: "DTR", shape: "rect", color: "gray" }
+        ];
+        let links = [
+            { source: 1, target: 2, color: "black" },
+            { source: 2, target: 3, color: "black" },
+            { source: 3, target: 4, color: "black" },
+            { source: 2, target: 5, color: "black" }
+        ];
+
+        function drawDiagram() {
+            container.selectAll("*").remove(); // Clear previous elements
+
+            // Draw links
+            container.selectAll(".line").data(links).enter()
+                .append("line")
+                .attr("class", "line")
+                .attr("x1", d => nodes.find(n => n.id === d.source).x)
+                .attr("y1", d => nodes.find(n => n.id === d.source).y)
+                .attr("x2", d => nodes.find(n => n.id === d.target).x)
+                .attr("y2", d => nodes.find(n => n.id === d.target).y)
+                .attr("stroke", d => d.color);
+
+            // Draw nodes
+            const nodeElements = container.selectAll(".node").data(nodes).enter().append("g")
+                .attr("class", "node")
+                .attr("transform", d => `translate(${d.x},${d.y})`)
+                .call(d3.drag()
+                    .on("drag", (event, d) => {
+                        d.x = event.x; d.y = event.y;
+                        drawDiagram();
+                    })
+                )
+                .on("click", (event, d) => {
+                    selectedNode = d;
+                    positionButtons(event.pageX, event.pageY, d);
+                    setTimeout(hideButtons, 2000);
+                })
+                .on("dblclick", (event, d) => {
+                    d.color = prompt("Change color:", d.color) || d.color;
+                    drawDiagram();
+                });
+
+            nodeElements.append("circle")
+                .attr("r", 20)
+                .attr("fill", d => d.color)
+                .attr("stroke", "black");
+
+            nodeElements.append("text")
+                .attr("text-anchor", "middle")
+                .attr("dy", 5)
+                .text(d => d.text)
+                .attr("fill", "white")
+                .on("click", (event, d) => {
+                    const input = document.createElement("input");
+                    input.type = "text";
+                    input.value = d.text;
+                    input.style.position = "absolute";
+                    input.style.left = `${event.pageX}px`;
+                    input.style.top = `${event.pageY}px`;
+                    document.body.appendChild(input);
+                    input.focus();
+                    input.addEventListener("blur", () => {
+                        d.text = input.value;
+                        document.body.removeChild(input);
+                        drawDiagram();
+                    });
+                });
+        }
+
+        function positionButtons(x, y, node) {
+            addNodeBtn.style.left = `${x + 20}px`;
+            addNodeBtn.style.top = `${y}px`;
+            addNodeBtn.style.display = "block";
+
+            if (!links.some(link => link.source === node.id)) {
+                deleteNodeBtn.style.left = `${x - 50}px`;
+                deleteNodeBtn.style.top = `${y}px`;
+                deleteNodeBtn.style.display = "block";
+            } else {
+                deleteNodeBtn.style.display = "none";
+            }
+        }
+
+        addNodeBtn.addEventListener("click", () => {
+            if (selectedNode) {
+                const newNode = { id: nodes.length + 1, x: selectedNode.x + 100, y: selectedNode.y, text: "8m", color: "gray" };
+                nodes.push(newNode);
+                links.push({ source: selectedNode.id, target: newNode.id, color: "black" });
+                drawDiagram();
+                hideButtons();
+            }
+        });
+
+        deleteNodeBtn.addEventListener("click", () => {
+            if (selectedNode) {
+                nodes = nodes.filter(n => n.id !== selectedNode.id);
+                links = links.filter(l => l.source !== selectedNode.id && l.target !== selectedNode.id);
+                drawDiagram();
+                hideButtons();
+            }
+        });
+
+        function hideButtons() {
+            addNodeBtn.style.display = "none";
+            deleteNodeBtn.style.display = "none";
+        }
+
+        drawDiagram();
+    </script>
+<script>
+    function selectPageSizeAndOrientation() {
+        const sizes = {
+            "A4": [210, 297],
+            "A3": [297, 420],
+            "A5": [148, 210],
+            "A2": [420, 594],
+            "A1": [594, 841],
+            "A0": [841, 1189]
+        };
+
+        // Fetch selected values from dropdowns
+        const sizeChoice = document.getElementById("paperSize").value;
+        const orientation = document.getElementById("orientation").value;
+
+        let [width, height] = sizes[sizeChoice];
+        if (orientation === "landscape") [width, height] = [height, width];
+
+        return { width, height, orientation };
+    }
+
+    function saveAsImage(format, width, height, orientation) {
+        const container = document.querySelector(".container"); // Capture only the diagram area
+
+        html2canvas(container, { backgroundColor: "#ffffff" }).then(canvas => {
+            if (format === "png") {
+                const link = document.createElement("a");
+                link.href = canvas.toDataURL("image/png");
+                link.download = `diagram_${width}x${height}_${orientation}.png`;
+                link.click();
+            } else if (format === "pdf") {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: orientation,
+                    unit: "mm",
+                    format: [width, height]
+                });
+
+                const imgData = canvas.toDataURL("image/png");
+                pdf.addImage(imgData, "PNG", 10, 10, width - 20, height - 20);
+                pdf.save(`diagram_${width}x${height}_${orientation}.pdf`);
+            }
+        });
+    }
+
+    // Attach event listeners AFTER defining the functions
+    document.getElementById("savePngBtn").addEventListener("click", function () {
+        const { width, height, orientation } = selectPageSizeAndOrientation();
+        saveAsImage("png", width, height, orientation);
+    });
+
+    document.getElementById("savePdfBtn").addEventListener("click", function () {
+        const { width, height, orientation } = selectPageSizeAndOrientation();
+        saveAsImage("pdf", width, height, orientation);
+    });
+</script>
+
+</body>
+</html>
