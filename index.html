@@ -11,6 +11,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/svg2pdf.js/1.3.4/svg2pdf.min.js"></script>
 
     <style>
+        
         body { font-family: Arial, sans-serif; overflow: hidden; }
         .container { width: 100vw; height: 100vh; overflow: auto; position: relative; }
         svg { border: 1px solid #ddd; background: white; cursor: grab; }
@@ -157,22 +158,174 @@ function drawDiagram() {
 
             // Draw links
 // Draw links with toggling line type on click
-// Draw links with toggling line type on click and pointer change
-container.selectAll(".line").data(links).enter()
+// Define line styles
+const lineStyles = [
+    { 
+        dasharray: "0",                    // Solid
+        crosses: false
+    },
+    { 
+        dasharray: "5,5",                  // Dashed
+        crosses: false
+    },
+    { 
+        dasharray: "20,10",                // Dashed with crosses
+        crosses: true
+    }
+];
+
+// Function to create/update crosses for a line
+function updateCrosses(lineElement) {
+    const line = d3.select(lineElement);
+    const data = line.datum();
+    const parent = d3.select(lineElement.parentNode);
+    
+    // Get line coordinates
+    const x1 = parseFloat(line.attr("x1"));
+    const y1 = parseFloat(line.attr("y1"));
+    const x2 = parseFloat(line.attr("x2"));
+    const y2 = parseFloat(line.attr("y2"));
+    
+    // Calculate angle and length
+    const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+    const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    
+    // Calculate cross positions
+    const spacing = 30; // pixels between crosses
+    const numCrosses = Math.floor(length / spacing);
+    const crosses = [];
+    
+    for (let i = 1; i <= numCrosses; i++) {
+        const t = i / (numCrosses + 1);
+        crosses.push({
+            x: x1 + (x2 - x1) * t,
+            y: y1 + (y2 - y1) * t,
+            angle: angle
+        });
+    }
+    
+    // Select or create cross group
+    let crossGroup = parent.select(`.crosses-${data.source}-${data.target}`);
+    if (crossGroup.empty()) {
+        crossGroup = parent.append("g")
+            .attr("class", `crosses-${data.source}-${data.target}`);
+    }
+    
+    // Update crosses
+    const crossElements = crossGroup.selectAll(".cross")
+        .data(crosses);
+    
+    // Remove old crosses
+    crossElements.exit().remove();
+    
+    // Create new crosses
+    const crossEnter = crossElements.enter()
+        .append("g")
+        .attr("class", "cross");
+    
+    // Add cross lines
+    crossEnter.append("line")
+        .attr("class", "cross-line")
+        .attr("x1", -4)
+        .attr("y1", -4)
+        .attr("x2", 4)
+        .attr("y2", 4)
+        .attr("stroke", line.attr("stroke"))
+        .attr("stroke-width", 2);
+    
+    crossEnter.append("line")
+        .attr("class", "cross-line")
+        .attr("x1", -4)
+        .attr("y1", 4)
+        .attr("x2", 4)
+        .attr("y2", -4)
+        .attr("stroke", line.attr("stroke"))
+        .attr("stroke-width", 2);
+    
+    // Update all crosses
+    const allCrosses = crossElements.merge(crossEnter);
+    allCrosses.attr("transform", d => `translate(${d.x},${d.y}) rotate(${d.angle})`);
+}
+
+// Update line and its crosses
+function updateLineAndCrosses(lineElement) {
+    const line = d3.select(lineElement);
+    const data = line.datum();
+    
+    // Update line position
+    line
+        .attr("x1", d => nodes.find(n => n.id === d.source).x)
+        .attr("y1", d => nodes.find(n => n.id === d.source).y)
+        .attr("x2", d => nodes.find(n => n.id === d.target).x)
+        .attr("y2", d => nodes.find(n => n.id === d.target).y);
+    
+    // Update crosses if style includes them
+    if (lineStyles[data.styleIndex].crosses) {
+        updateCrosses(lineElement);
+    }
+}
+
+// Create and update lines
+container.selectAll(".line")
+    .data(links)
+    .enter()
     .append("line")
     .attr("class", "line")
+    .attr("stroke", d => d.color || "black")
+    .attr("stroke-width", 2)
     .attr("x1", d => nodes.find(n => n.id === d.source).x)
     .attr("y1", d => nodes.find(n => n.id === d.source).y)
     .attr("x2", d => nodes.find(n => n.id === d.target).x)
     .attr("y2", d => nodes.find(n => n.id === d.target).y)
-    .attr("stroke", d => d.color)
-    .attr("stroke-width", 2)
-    .attr("stroke-dasharray", d => d.dashed ? "5,5" : "0") // Toggle dashed/solid
-    .style("cursor", "pointer") // Change cursor to pointer when hovering
-    .on("click", (event, d) => {
-        d.dashed = !d.dashed;
-        drawDiagram();
+    .each(function(d) {
+        if (d.styleIndex === undefined) d.styleIndex = 0;
+        const line = d3.select(this);
+        line.attr("stroke-dasharray", lineStyles[d.styleIndex].dasharray);
+        if (lineStyles[d.styleIndex].crosses) {
+            updateCrosses(this);
+        }
     })
+    .style("cursor", "pointer")
+    .on("click", function(event, d) {
+        // Remove existing crosses
+        const parent = d3.select(this.parentNode);
+        parent.select(`.crosses-${d.source}-${d.target}`).remove();
+        
+        // Update style
+        d.styleIndex = (d.styleIndex + 1) % lineStyles.length;
+        
+        // Apply new style
+        const line = d3.select(this);
+        line.attr("stroke-dasharray", lineStyles[d.styleIndex].dasharray);
+        
+        // Add crosses if needed
+        if (lineStyles[d.styleIndex].crosses) {
+            updateCrosses(this);
+        }
+    });
+
+// Drag behavior
+const drag = d3.drag()
+    .on("drag", function(event, d) {
+        // Update node position
+        d.x = event.x;
+        d.y = event.y;
+        d3.select(this)
+            .attr("cx", d.x)
+            .attr("cy", d.y);
+        
+        // Update connected lines and crosses
+        container.selectAll(".line")
+            .filter(line => line.source === d.id || line.target === d.id)
+            .each(function() {
+                updateLineAndCrosses(this);
+            });
+    });
+
+// Apply drag behavior to nodes
+container.selectAll(".node")
+    .call(drag)
+
     .on("dblclick", (event, d) => {
         // Create a color input element
         const colorPicker = document.createElement("input");
@@ -282,6 +435,7 @@ container.selectAll(".link-label").data(links).enter()
                     positionButtons(event.pageX, event.pageY, d);
                     setTimeout(hideButtons, 2000);
                 })
+                
                 .on("dblclick", (event, d) => {
     // Create a color input element
     const colorPicker = document.createElement("input");
