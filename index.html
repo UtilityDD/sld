@@ -1,97 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Electrical Diagram</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
- <!-- Scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/svg2pdf.js/1.3.4/svg2pdf.min.js"></script>
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg2pdf.js/1.3.4/svg2pdf.min.js"></script>
 
     <style>
-        
-        body { font-family: Arial, sans-serif; overflow: hidden; }
-        .container { width: 100vw; height: 100vh; overflow: auto; position: relative; }
-        svg { border: 1px solid #ddd; background: white; cursor: grab; }
-        .node { cursor: pointer; }
-        .line { stroke-width: 2px; }
-        .control-btn { position: absolute; background: #f00; color: white; border: none; padding: 5px; cursor: pointer; display: none; }
+        body {
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            overflow: auto;
+            position: relative;
+        }
+
+        svg {
+            border: 1px solid #ddd;
+            background: white;
+            cursor: grab;
+        }
+
+        .node {
+            cursor: pointer;
+        }
+
+        .line {
+            stroke-width: 2px;
+        }
+
+        .control-btn {
+            position: absolute;
+            background: #f00;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            display: none;
+        }
     </style>
 </head>
+
 <body>
-    
+
     <div class="container">
-        
+
         <button id="menuBtn" style="position: absolute; top: 15px; left: 30px; z-index: 1000;">Symbol</button>
         <button id="addTextBox" style="position: absolute; top: 15px; left: 100px; z-index: 1000;">Add Text Box</button>
-        <button id="addNetworkBtn" style="position: absolute; top: 15px; left: 200px; z-index: 1000;">Add New Network</button>
+        <button id="addNetworkBtn" style="position: absolute; top: 15px; left: 200px; z-index: 1000;">Add New
+            Network</button>
+        <button id="addSignatureBtn" style="position: absolute; top: 15px; left: 330px; z-index: 1000;">Add
+            Signature</button>
+        <input type="file" id="signatureInput" accept="image/png" style="display: none;">
+
+        <div id="menuList"
+            style="display: none; position: absolute; top: 40px; left: 10px; background: white; padding: 10px; border: 1px solid #ddd;">
+            <button class="symbolBtn" data-symbol="🌳">Big Tree</button>
+            <button class="symbolBtn" data-symbol="🌳🌲🌴">Forest</button>
+            <button class="symbolBtn" data-symbol="🕉️">Mandir</button>
+            <button class="symbolBtn" data-symbol="🕌">Masjid</button>
+            <button class="symbolBtn" data-symbol="🏫">School</button>
+            <button class="symbolBtn" data-symbol="🏢">Office</button>
+            <button class="symbolBtn" data-symbol="🐟">Pond</button>
+            <button class="symbolBtn" data-symbol="🏁🏁🏁🏁🏁🏁🏁🏁">Road</button>
+            <button class="symbolBtn" data-symbol="🏁🏁">Create Road</button>
 
 
-<div id="menuList" style="display: none; position: absolute; top: 40px; left: 10px; background: white; padding: 10px; border: 1px solid #ddd;">
-    <button class="symbolBtn" data-symbol="🌳">Tree</button>
-    <button class="symbolBtn" data-symbol="🛕">Mandir</button>
-    <button class="symbolBtn" data-symbol="🕌">Masjid</button>
-    <button class="symbolBtn" data-symbol="🏫">School</button>
-    <button class="symbolBtn" data-symbol="🏢">Office</button>
-    <button class="symbolBtn" data-symbol="🌊">Pond</button>
-    <button class="symbolBtn" data-symbol="🅴">Earthing</button>
-<button class="symbolBtn" data-symbol="📌">Stay Set</button>
-<button class="symbolBtn" data-symbol="🔌">Extension</button>
 
-</div>
+
+        </div>
         <svg id="diagram" width="2000" height="2000"></svg>
     </div>
-    
+
     <button id="addNodeBtn" class="control-btn">Add</button>
-    
-<!-- Save Buttons -->
- <!-- Dropdowns for Paper Size and Orientation -->
-<label for="paperSize">Paper Size:</label>
-<select id="paperSize">
-    <option value="A4">A4</option>
-    <option value="A3">A3</option>
-    <option value="A5">A5</option>
-    <option value="A2">A2</option>
-    <option value="A1">A1</option>
-    <option value="A0">A0</option>
-</select>
 
-<label for="orientation">Orientation:</label>
-<select id="orientation">
-    <option value="portrait">Portrait</option>
-    <option value="landscape">Landscape</option>
-</select>
-<button id="resetBtn" style="position: absolute; top: 15px; right: 240px; z-index: 1000;">Reset</button>
-<button id="savePngBtn" style="position: absolute; top: 15px; right: 135px; z-index: 1000;">Save as PNG</button>
-<button id="savePdfBtn" style="position: absolute; top: 15px; right: 30px; z-index: 1000;">Save as PDF</button>
+    <!-- Save Buttons -->
+    <!-- Dropdowns for Paper Size and Orientation -->
+    <label for="paperSize">Paper Size:</label>
+    <select id="paperSize">
+        <option value="A4">A4</option>
+        <option value="A3">A3</option>
+        <option value="A5">A5</option>
+        <option value="A2">A2</option>
+        <option value="A1">A1</option>
+        <option value="A0">A0</option>
+    </select>
 
-<script>
-    document.getElementById("resetBtn").addEventListener("click", () => {
-        location.reload();
-    });
+    <label for="orientation">Orientation:</label>
+    <select id="orientation">
+        <option value="portrait">Portrait</option>
+        <option value="landscape">Landscape</option>
+    </select>
+    <button id="resetBtn" style="position: absolute; top: 15px; right: 240px; z-index: 1000;">Reset</button>
+    <button id="savePngBtn" style="position: absolute; top: 15px; right: 135px; z-index: 1000;">Save as PNG</button>
+    <button id="savePdfBtn" style="position: absolute; top: 15px; right: 30px; z-index: 1000;">Save as PDF</button>
 
-    document.getElementById("addNetworkBtn").addEventListener("click", function() {
-    // Default position for the new node
-    const newNode = { 
-        id: nodes.length + 1, 
-        x: 300, // Adjust as needed for blank space
-        y: 300, // Adjust as needed for blank space
-        text: "8m", 
-        color: "gray" 
-    };
+    <script>
+        document.getElementById("resetBtn").addEventListener("click", () => {
+            location.reload();
+        });
 
-    nodes.push(newNode);
-    drawDiagram(); // Redraw to reflect changes
-});
+        document.getElementById("addNetworkBtn").addEventListener("click", function () {
+            // Default position for the new node
+            const newNode = {
+                id: nodes.length + 1,
+                x: 300, // Adjust as needed for blank space
+                y: 300, // Adjust as needed for blank space
+                text: "8m",
+                color: "gray"
+            };
+
+            nodes.push(newNode);
+            drawDiagram(); // Redraw to reflect changes
+        });
 
 
 
-</script>
+    </script>
 
     <button id="deleteNodeBtn" class="control-btn">Delete</button>
-    
+
     <script>
         const svg = d3.select("#diagram");
         const container = svg.append("g");
@@ -117,306 +154,307 @@
             { id: 5, x: 700, y: 600, text: "DTR", shape: "rect", color: "gray" }
         ];
         let links = [
-    { source: 1, target: 2, color: "black", text: "label", x: 300, y: 100, rotate: 0 },
-    { source: 2, target: 3, color: "black", text: "label", x: 500, y: 100, rotate: 0 },
-    { source: 3, target: 4, color: "black", text: "label", x: 700, y: 100, rotate: 0 },
-    { source: 2, target: 5, color: "black", text: "label", x: 450, y: 250, rotate: 0 }
-];
+            { source: 1, target: 2, color: "black", text: "label", x: 300, y: 100, rotate: 0 },
+            { source: 2, target: 3, color: "black", text: "label", x: 500, y: 100, rotate: 0 },
+            { source: 3, target: 4, color: "black", text: "label", x: 700, y: 100, rotate: 0 },
+            { source: 2, target: 5, color: "black", text: "label", x: 450, y: 250, rotate: 0 }
+        ];
 
 
-document.getElementById("menuBtn").addEventListener("click", () => {
-    const menuList = document.getElementById("menuList");
-    menuList.style.display = menuList.style.display === "none" ? "block" : "none";
-});
+        document.getElementById("menuBtn").addEventListener("click", () => {
+            const menuList = document.getElementById("menuList");
+            menuList.style.display = menuList.style.display === "none" ? "block" : "none";
+        });
 
-svg.on("click", (event) => {
-    if (!selectedSymbol) return;
+        svg.on("click", (event) => {
+            if (!selectedSymbol) return;
 
-    const transform = d3.zoomTransform(svg.node()); // Get current zoom & pan transform
-    const [mouseX, mouseY] = transform.invert(d3.pointer(event)); // Convert to transformed coordinates
+            const transform = d3.zoomTransform(svg.node()); // Get current zoom & pan transform
+            const [mouseX, mouseY] = transform.invert(d3.pointer(event)); // Convert to transformed coordinates
 
-    const newSymbol = { id: nodes.length + 1, x: mouseX, y: mouseY, text: selectedSymbol, color: "white" };
-    nodes.push(newSymbol);
-    selectedSymbol = null;
-    drawDiagram(); // Redraw with the new symbol
-});
-
-
-let selectedSymbol = null;
-
-document.querySelectorAll(".symbolBtn").forEach(button => {
-    button.addEventListener("click", (event) => {
-        selectedSymbol = event.target.dataset.symbol; // Store only the data-symbol value
-    });
-});
+            const newSymbol = { id: nodes.length + 1, x: mouseX, y: mouseY, text: selectedSymbol, color: "white" };
+            nodes.push(newSymbol);
+            selectedSymbol = null;
+            drawDiagram(); // Redraw with the new symbol
+        });
 
 
-   
-function drawDiagram() {
+        let selectedSymbol = null;
+
+        document.querySelectorAll(".symbolBtn").forEach(button => {
+            button.addEventListener("click", (event) => {
+                selectedSymbol = event.target.dataset.symbol; // Store only the data-symbol value
+            });
+        });
+
+
+
+        function drawDiagram() {
             container.selectAll("*").rem
             container.selectAll("*").remove(); // Clear previous elements
 
             // Draw links
-// Draw links with toggling line type on click
-// Define line styles
-const lineStyles = [
-    { 
-        dasharray: "0",                    // Solid
-        crosses: false
-    },
-    { 
-        dasharray: "5,5",                  // Dashed
-        crosses: false
-    },
-    { 
-        dasharray: "20,10",                // Dashed with crosses
-        crosses: true
-    }
-];
+            // Draw links with toggling line type on click
+            // Define line styles
+            const lineStyles = [
+                {
+                    dasharray: "0",                    // Solid
+                    crosses: false
+                },
+                {
+                    dasharray: "5,5",                  // Dashed
+                    crosses: false
+                },
+                {
+                    dasharray: "20,10",                // Dashed with crosses
+                    crosses: true
+                }
+            ];
 
-// Function to create/update crosses for a line
-function updateCrosses(lineElement) {
-    const line = d3.select(lineElement);
-    const data = line.datum();
-    const parent = d3.select(lineElement.parentNode);
-    
-    // Get line coordinates
-    const x1 = parseFloat(line.attr("x1"));
-    const y1 = parseFloat(line.attr("y1"));
-    const x2 = parseFloat(line.attr("x2"));
-    const y2 = parseFloat(line.attr("y2"));
-    
-    // Calculate angle and length
-    const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-    const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-    
-    // Calculate cross positions
-    const spacing = 30; // pixels between crosses
-    const numCrosses = Math.floor(length / spacing);
-    const crosses = [];
-    
-    for (let i = 1; i <= numCrosses; i++) {
-        const t = i / (numCrosses + 1);
-        crosses.push({
-            x: x1 + (x2 - x1) * t,
-            y: y1 + (y2 - y1) * t,
-            angle: angle
-        });
-    }
-    
-    // Select or create cross group
-    let crossGroup = parent.select(`.crosses-${data.source}-${data.target}`);
-    if (crossGroup.empty()) {
-        crossGroup = parent.append("g")
-            .attr("class", `crosses-${data.source}-${data.target}`);
-    }
-    
-    // Update crosses
-    const crossElements = crossGroup.selectAll(".cross")
-        .data(crosses);
-    
-    // Remove old crosses
-    crossElements.exit().remove();
-    
-    // Create new crosses
-    const crossEnter = crossElements.enter()
-        .append("g")
-        .attr("class", "cross");
-    
-    // Add cross lines
-    crossEnter.append("line")
-        .attr("class", "cross-line")
-        .attr("x1", -4)
-        .attr("y1", -4)
-        .attr("x2", 4)
-        .attr("y2", 4)
-        .attr("stroke", line.attr("stroke"))
-        .attr("stroke-width", 2);
-    
-    crossEnter.append("line")
-        .attr("class", "cross-line")
-        .attr("x1", -4)
-        .attr("y1", 4)
-        .attr("x2", 4)
-        .attr("y2", -4)
-        .attr("stroke", line.attr("stroke"))
-        .attr("stroke-width", 2);
-    
-    // Update all crosses
-    const allCrosses = crossElements.merge(crossEnter);
-    allCrosses.attr("transform", d => `translate(${d.x},${d.y}) rotate(${d.angle})`);
-}
+            // Function to create/update crosses for a line
+            function updateCrosses(lineElement) {
+                const line = d3.select(lineElement);
+                const data = line.datum();
+                const parent = d3.select(lineElement.parentNode);
 
-// Update line and its crosses
-function updateLineAndCrosses(lineElement) {
-    const line = d3.select(lineElement);
-    const data = line.datum();
-    
-    // Update line position
-    line
-        .attr("x1", d => nodes.find(n => n.id === d.source).x)
-        .attr("y1", d => nodes.find(n => n.id === d.source).y)
-        .attr("x2", d => nodes.find(n => n.id === d.target).x)
-        .attr("y2", d => nodes.find(n => n.id === d.target).y);
-    
-    // Update crosses if style includes them
-    if (lineStyles[data.styleIndex].crosses) {
-        updateCrosses(lineElement);
-    }
-}
+                // Get line coordinates
+                const x1 = parseFloat(line.attr("x1"));
+                const y1 = parseFloat(line.attr("y1"));
+                const x2 = parseFloat(line.attr("x2"));
+                const y2 = parseFloat(line.attr("y2"));
 
-// Create and update lines
-container.selectAll(".line")
-    .data(links)
-    .enter()
-    .append("line")
-    .attr("class", "line")
-    .attr("stroke", d => d.color || "black")
-    .attr("stroke-width", 2)
-    .attr("x1", d => nodes.find(n => n.id === d.source).x)
-    .attr("y1", d => nodes.find(n => n.id === d.source).y)
-    .attr("x2", d => nodes.find(n => n.id === d.target).x)
-    .attr("y2", d => nodes.find(n => n.id === d.target).y)
-    .each(function(d) {
-        if (d.styleIndex === undefined) d.styleIndex = 0;
-        const line = d3.select(this);
-        line.attr("stroke-dasharray", lineStyles[d.styleIndex].dasharray);
-        if (lineStyles[d.styleIndex].crosses) {
-            updateCrosses(this);
-        }
-    })
-    .style("cursor", "pointer")
-    .on("click", function(event, d) {
-        // Remove existing crosses
-        const parent = d3.select(this.parentNode);
-        parent.select(`.crosses-${d.source}-${d.target}`).remove();
-        
-        // Update style
-        d.styleIndex = (d.styleIndex + 1) % lineStyles.length;
-        
-        // Apply new style
-        const line = d3.select(this);
-        line.attr("stroke-dasharray", lineStyles[d.styleIndex].dasharray);
-        
-        // Add crosses if needed
-        if (lineStyles[d.styleIndex].crosses) {
-            updateCrosses(this);
-        }
-    });
+                // Calculate angle and length
+                const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 
-// Drag behavior
-const drag = d3.drag()
-    .on("drag", function(event, d) {
-        // Update node position
-        d.x = event.x;
-        d.y = event.y;
-        d3.select(this)
-            .attr("cx", d.x)
-            .attr("cy", d.y);
-        
-        // Update connected lines and crosses
-        container.selectAll(".line")
-            .filter(line => line.source === d.id || line.target === d.id)
-            .each(function() {
-                updateLineAndCrosses(this);
-            });
-    });
+                // Calculate cross positions
+                const spacing = 30; // pixels between crosses
+                const numCrosses = Math.floor(length / spacing);
+                const crosses = [];
 
-// Apply drag behavior to nodes
-container.selectAll(".node")
-    .call(drag)
+                for (let i = 1; i <= numCrosses; i++) {
+                    const t = i / (numCrosses + 1);
+                    crosses.push({
+                        x: x1 + (x2 - x1) * t,
+                        y: y1 + (y2 - y1) * t,
+                        angle: angle
+                    });
+                }
 
-    .on("dblclick", (event, d) => {
-        // Create a color input element
-        const colorPicker = document.createElement("input");
-        colorPicker.type = "color";
-        colorPicker.style.position = "absolute";
-        colorPicker.style.left = `${event.pageX}px`;
-        colorPicker.style.top = `${event.pageY}px`;
-        colorPicker.value = d.color; // Set current color
+                // Select or create cross group
+                let crossGroup = parent.select(`.crosses-${data.source}-${data.target}`);
+                if (crossGroup.empty()) {
+                    crossGroup = parent.append("g")
+                        .attr("class", `crosses-${data.source}-${data.target}`);
+                }
 
-        document.body.appendChild(colorPicker);
-        colorPicker.focus();
+                // Update crosses
+                const crossElements = crossGroup.selectAll(".cross")
+                    .data(crosses);
 
-        // Update color on selection
-        colorPicker.addEventListener("input", () => {
-            d.color = colorPicker.value;
-            drawDiagram();
-        });
+                // Remove old crosses
+                crossElements.exit().remove();
 
-        // Remove color picker when focus is lost
-        colorPicker.addEventListener("blur", () => {
-            document.body.removeChild(colorPicker);
-        });
-    });
+                // Create new crosses
+                const crossEnter = crossElements.enter()
+                    .append("g")
+                    .attr("class", "cross");
+
+                // Add cross lines
+                crossEnter.append("line")
+                    .attr("class", "cross-line")
+                    .attr("x1", -4)
+                    .attr("y1", -4)
+                    .attr("x2", 4)
+                    .attr("y2", 4)
+                    .attr("stroke", line.attr("stroke"))
+                    .attr("stroke-width", 2);
+
+                crossEnter.append("line")
+                    .attr("class", "cross-line")
+                    .attr("x1", -4)
+                    .attr("y1", 4)
+                    .attr("x2", 4)
+                    .attr("y2", -4)
+                    .attr("stroke", line.attr("stroke"))
+                    .attr("stroke-width", 2);
+
+                // Update all crosses
+                const allCrosses = crossElements.merge(crossEnter);
+                allCrosses.attr("transform", d => `translate(${d.x},${d.y}) rotate(${d.angle})`);
+            }
+
+            // Update line and its crosses
+            function updateLineAndCrosses(lineElement) {
+                const line = d3.select(lineElement);
+                const data = line.datum();
+
+                // Update line position
+                line
+                    .attr("x1", d => nodes.find(n => n.id === d.source).x)
+                    .attr("y1", d => nodes.find(n => n.id === d.source).y)
+                    .attr("x2", d => nodes.find(n => n.id === d.target).x)
+                    .attr("y2", d => nodes.find(n => n.id === d.target).y);
+
+                // Update crosses if style includes them
+                if (lineStyles[data.styleIndex].crosses) {
+                    updateCrosses(lineElement);
+                }
+            }
+
+            // Create and update lines
+            container.selectAll(".line")
+                .data(links)
+                .enter()
+                .append("line")
+                .attr("class", "line")
+                .attr("stroke", d => d.color || "black")
+                .attr("stroke-width", 2)
+                .attr("x1", d => nodes.find(n => n.id === d.source).x)
+                .attr("y1", d => nodes.find(n => n.id === d.source).y)
+                .attr("x2", d => nodes.find(n => n.id === d.target).x)
+                .attr("y2", d => nodes.find(n => n.id === d.target).y)
+                .each(function (d) {
+                    if (d.styleIndex === undefined) d.styleIndex = 0;
+                    const line = d3.select(this);
+                    line.attr("stroke-dasharray", lineStyles[d.styleIndex].dasharray);
+                    if (lineStyles[d.styleIndex].crosses) {
+                        updateCrosses(this);
+                    }
+                })
+                .style("cursor", "pointer")
+                .on("click", function (event, d) {
+                    // Remove existing crosses
+                    const parent = d3.select(this.parentNode);
+                    parent.select(`.crosses-${d.source}-${d.target}`).remove();
+
+                    // Update style
+                    d.styleIndex = (d.styleIndex + 1) % lineStyles.length;
+
+                    // Apply new style
+                    const line = d3.select(this);
+                    line.attr("stroke-dasharray", lineStyles[d.styleIndex].dasharray);
+
+                    // Add crosses if needed
+                    if (lineStyles[d.styleIndex].crosses) {
+                        updateCrosses(this);
+                    }
+                });
+
+            // Drag behavior
+            const drag = d3.drag()
+                .on("drag", function (event, d) {
+                    // Update node position
+                    d.x = event.x;
+                    d.y = event.y;
+                    d3.select(this)
+                        .attr("cx", d.x)
+                        .attr("cy", d.y);
+
+                    // Update connected lines and crosses
+                    container.selectAll(".line")
+                        .filter(line => line.source === d.id || line.target === d.id)
+                        .each(function () {
+                            updateLineAndCrosses(this);
+                        });
+                });
 
 
-// Draw labels for links
-const linkLabels = container.selectAll(".link-label").data(links).enter()
-    .append("g") // Group for text + transform
-    .attr("class", "link-label")
-    .each(function (d) {
-        const x1 = nodes.find(n => n.id === d.source).x;
-        const y1 = nodes.find(n => n.id === d.source).y;
-        const x2 = nodes.find(n => n.id === d.target).x;
-        const y2 = nodes.find(n => n.id === d.target).y;
+            // Apply drag behavior to nodes
+            container.selectAll(".node")
+                .call(drag)
 
-        // Default position & rotation
-        d.x = (x1 + x2) / 2;
-        d.y = (y1 + y2) / 2;
-        d.rotate = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+                .on("dblclick", (event, d) => {
+                    // Create a color input element
+                    const colorPicker = document.createElement("input");
+                    colorPicker.type = "color";
+                    colorPicker.style.position = "absolute";
+                    colorPicker.style.left = `${event.pageX}px`;
+                    colorPicker.style.top = `${event.pageY}px`;
+                    colorPicker.value = d.color; // Set current color
 
-        d3.select(this)
-            .attr("transform", `translate(${d.x},${d.y}) rotate(${d.rotate})`);
-    });
+                    document.body.appendChild(colorPicker);
+                    colorPicker.focus();
 
-// Add editable text inside the label group
-linkLabels.append("text")
-    .attr("text-anchor", "middle")
-    .attr("dy", -5)
-    .text(d => d.text || "Label") // Default label text
-    .attr("fill", "black")
-    .on("click", (event, d) => {
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = d.text || "";
-        input.style.position = "absolute";
-        input.style.left = `${event.pageX}px`;
-        input.style.top = `${event.pageY}px`;
-        document.body.appendChild(input);
-        input.focus();
-        input.addEventListener("blur", () => {
-            d.text = input.value;
-            document.body.removeChild(input);
-            drawDiagram();
-        });
-    });
+                    // Update color on selection
+                    colorPicker.addEventListener("input", () => {
+                        d.color = colorPicker.value;
+                        drawDiagram();
+                    });
+
+                    // Remove color picker when focus is lost
+                    colorPicker.addEventListener("blur", () => {
+                        document.body.removeChild(colorPicker);
+                    });
+                });
 
 
-// Draw labels for links
-container.selectAll(".link-label").data(links).enter()
-    .append("text")
-    .attr("class", "link-label")
-    .attr("x", d => (nodes.find(n => n.id === d.source).x + nodes.find(n => n.id === d.target).x) / 2)
-    .attr("y", d => (nodes.find(n => n.id === d.source).y + nodes.find(n => n.id === d.target).y) / 2 - 5)
-    .attr("text-anchor", "middle")
-    .attr("fill", "blue")
-    .text(d => d.text || "Label") // Default label
-    .on("click", (event, d) => {
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = d.text || "";
-        input.style.position = "absolute";
-        input.style.left = `${event.pageX}px`;
-        input.style.top = `${event.pageY}px`;
-        document.body.appendChild(input);
-        input.focus();
-        input.addEventListener("blur", () => {
-            d.text = input.value; // Save the new label
-            document.body.removeChild(input);
-            drawDiagram();
-        });
-    });
+            // Draw labels for links
+            const linkLabels = container.selectAll(".link-label").data(links).enter()
+                .append("g") // Group for text + transform
+                .attr("class", "link-label")
+                .each(function (d) {
+                    const x1 = nodes.find(n => n.id === d.source).x;
+                    const y1 = nodes.find(n => n.id === d.source).y;
+                    const x2 = nodes.find(n => n.id === d.target).x;
+                    const y2 = nodes.find(n => n.id === d.target).y;
+
+                    // Default position & rotation
+                    d.x = (x1 + x2) / 2;
+                    d.y = (y1 + y2) / 2;
+                    d.rotate = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+
+                    d3.select(this)
+                        .attr("transform", `translate(${d.x},${d.y}) rotate(${d.rotate})`);
+                });
+
+            // Add editable text inside the label group
+            linkLabels.append("text")
+                .attr("text-anchor", "middle")
+                .attr("dy", -5)
+                .text(d => d.text || "Label") // Default label text
+                .attr("fill", "black")
+                .on("click", (event, d) => {
+                    const input = document.createElement("input");
+                    input.type = "text";
+                    input.value = d.text || "";
+                    input.style.position = "absolute";
+                    input.style.left = `${event.pageX}px`;
+                    input.style.top = `${event.pageY}px`;
+                    document.body.appendChild(input);
+                    input.focus();
+                    input.addEventListener("blur", () => {
+                        d.text = input.value;
+                        document.body.removeChild(input);
+                        drawDiagram();
+                    });
+                });
+
+
+            // Draw labels for links
+            container.selectAll(".link-label").data(links).enter()
+                .append("text")
+                .attr("class", "link-label")
+                .attr("x", d => (nodes.find(n => n.id === d.source).x + nodes.find(n => n.id === d.target).x) / 2)
+                .attr("y", d => (nodes.find(n => n.id === d.source).y + nodes.find(n => n.id === d.target).y) / 2 - 5)
+                .attr("text-anchor", "middle")
+                .attr("fill", "blue")
+                .text(d => d.text || "Label") // Default label
+                .on("click", (event, d) => {
+                    const input = document.createElement("input");
+                    input.type = "text";
+                    input.value = d.text || "";
+                    input.style.position = "absolute";
+                    input.style.left = `${event.pageX}px`;
+                    input.style.top = `${event.pageY}px`;
+                    document.body.appendChild(input);
+                    input.focus();
+                    input.addEventListener("blur", () => {
+                        d.text = input.value; // Save the new label
+                        document.body.removeChild(input);
+                        drawDiagram();
+                    });
+                });
 
 
             // Draw nodes
@@ -435,100 +473,100 @@ container.selectAll(".link-label").data(links).enter()
                     positionButtons(event.pageX, event.pageY, d);
                     setTimeout(hideButtons, 2000);
                 })
-                
+
                 .on("dblclick", (event, d) => {
-    // Create a color input element
-    const colorPicker = document.createElement("input");
-    colorPicker.type = "color";
-    colorPicker.style.position = "absolute";
-    colorPicker.style.left = `${event.pageX}px`;
-    colorPicker.style.top = `${event.pageY}px`;
-    colorPicker.value = d.color; // Set current color
+                    // Create a color input element
+                    const colorPicker = document.createElement("input");
+                    colorPicker.type = "color";
+                    colorPicker.style.position = "absolute";
+                    colorPicker.style.left = `${event.pageX}px`;
+                    colorPicker.style.top = `${event.pageY}px`;
+                    colorPicker.value = d.color; // Set current color
 
-    document.body.appendChild(colorPicker);
-    colorPicker.focus();
+                    document.body.appendChild(colorPicker);
+                    colorPicker.focus();
 
-    // Update color on selection
-    colorPicker.addEventListener("input", () => {
-        d.color = colorPicker.value;
-        drawDiagram();
-    });
+                    // Update color on selection
+                    colorPicker.addEventListener("input", () => {
+                        d.color = colorPicker.value;
+                        drawDiagram();
+                    });
 
-    // Remove color picker when focus is lost
-    colorPicker.addEventListener("blur", () => {
-        document.body.removeChild(colorPicker);
-    });
-});
+                    // Remove color picker when focus is lost
+                    colorPicker.addEventListener("blur", () => {
+                        document.body.removeChild(colorPicker);
+                    });
+                });
 
-                nodeElements.append("circle")
-    .attr("r", 20)
-    .attr("fill", d => d.text.match(/[\uD800-\uDFFF]/) ? "none" : d.color) // Transparent for symbols
-    .attr("stroke", "none");
-
-
-
-// Add labels to nodes
-nodeElements.append("g") // Group the text and the background rect
-    .each(function(d) {
-        // Set label to null only for symbols (emoji-like characters)
-        if (d.text.match(/[\uD800-\uDFFF]/) && !d.label) {
-            d.label = null;
-        } else if (!d.label) {
-            d.label = "E,S"; // Restore default label for normal nodes
-        }
-
-        // Create the text element
-        const textElement = d3.select(this).append("text")
-            .attr("text-anchor", "middle")
-            .attr("dy", 35) // Position below the circle
-            .text(d => d.label || "") // Show label for non-symbol nodes
-            .attr("fill", "black") // Set text color
-            .style("font-size", "13px"); // Set font style
+            nodeElements.append("circle")
+                .attr("r", 20)
+                .attr("fill", d => d.text.match(/[\uD800-\uDFFF]/) ? "none" : d.color) // Transparent for symbols
+                .attr("stroke", "none");
 
 
 
-        // Get the bounding box of the text to size the rectangle
-        const bbox = textElement.node().getBBox();
+            // Add labels to nodes
+            nodeElements.append("g") // Group the text and the background rect
+                .each(function (d) {
+                    // Set label to null only for symbols (emoji-like characters)
+                    if (d.text.match(/[\uD800-\uDFFF]/) && !d.label) {
+                        d.label = null;
+                    } else if (!d.label) {
+                        d.label = "E,S"; // Restore default label for normal nodes
+                    }
 
-        // Create a rectangle behind the text to simulate a background
-        d3.select(this).insert("rect", "text") // Insert the rect behind the text
-            .attr("x", bbox.x - 2) // Adjust to center the background around the text
-            .attr("y", bbox.y - 2) // Adjust to position the background around the text
-            .attr("width", bbox.width + 4) // Set width based on the text size
-            .attr("height", bbox.height + 4) // Set height based on the text size
-            .attr("fill", "white"); // Set background color without border
-
-        // Handle click event to edit the label
-        textElement.on("click", (event, d) => {
-            const input = document.createElement("input");
-            input.type = "text";
-            input.value = d.label || "E,S"; // Start with the existing label or "E,S"
-            input.style.position = "absolute";
-            input.style.left = `${event.pageX}px`;
-            input.style.top = `${event.pageY + 30}px`; // Position below the text
-            input.style.fontStyle = "italic"; // Apply italic style to the input field
-            input.style.backgroundColor = "white"; // Set input background color to white
-            document.body.appendChild(input);
-            input.focus();
-
-            input.addEventListener("blur", () => {
-                // Update d.label only if the input is not empty
-                const newValue = input.value.trim();
-                if (newValue !== "") {
-                    d.label = newValue; // Only update the label if the input is not empty
-                } else {
-                    d.label = null; // Set label to null (or remove it) if the input is empty
-                }
-                document.body.removeChild(input);
-                drawDiagram(); // Re-render the diagram
-            });
-        });
-    });
+                    // Create the text element
+                    const textElement = d3.select(this).append("text")
+                        .attr("text-anchor", "middle")
+                        .attr("dy", 35) // Position below the circle
+                        .text(d => d.label || "") // Show label for non-symbol nodes
+                        .attr("fill", "black") // Set text color
+                        .style("font-size", "13px"); // Set font style
 
 
 
+                    // Get the bounding box of the text to size the rectangle
+                    const bbox = textElement.node().getBBox();
 
-        
+                    // Create a rectangle behind the text to simulate a background
+                    d3.select(this).insert("rect", "text") // Insert the rect behind the text
+                        .attr("x", bbox.x - 2) // Adjust to center the background around the text
+                        .attr("y", bbox.y - 2) // Adjust to position the background around the text
+                        .attr("width", bbox.width + 4) // Set width based on the text size
+                        .attr("height", bbox.height + 4) // Set height based on the text size
+                        .attr("fill", "white"); // Set background color without border
+
+                    // Handle click event to edit the label
+                    textElement.on("click", (event, d) => {
+                        const input = document.createElement("input");
+                        input.type = "text";
+                        input.value = d.label || "E,S"; // Start with the existing label or "E,S"
+                        input.style.position = "absolute";
+                        input.style.left = `${event.pageX}px`;
+                        input.style.top = `${event.pageY + 30}px`; // Position below the text
+                        input.style.fontStyle = "italic"; // Apply italic style to the input field
+                        input.style.backgroundColor = "white"; // Set input background color to white
+                        document.body.appendChild(input);
+                        input.focus();
+
+                        input.addEventListener("blur", () => {
+                            // Update d.label only if the input is not empty
+                            const newValue = input.value.trim();
+                            if (newValue !== "") {
+                                d.label = newValue; // Only update the label if the input is not empty
+                            } else {
+                                d.label = null; // Set label to null (or remove it) if the input is empty
+                            }
+                            document.body.removeChild(input);
+                            drawDiagram(); // Re-render the diagram
+                        });
+                    });
+                });
+
+
+
+
+
             nodeElements.append("text")
                 .attr("text-anchor", "middle")
                 .attr("dy", 5)
@@ -552,26 +590,26 @@ nodeElements.append("g") // Group the text and the background rect
         }
 
         function positionButtons(x, y, node) {
-    if (node.text.match(/[\uD800-\uDFFF]/)) {
-        deleteNodeBtn.style.left = `${x - 50}px`;
-        deleteNodeBtn.style.top = `${y}px`;
-        deleteNodeBtn.style.display = "block"; // Allow deleting symbols
-        addNodeBtn.style.display = "none";
-        return;
-    }
+            if (node.text.match(/[\uD800-\uDFFF]/)) {
+                deleteNodeBtn.style.left = `${x - 50}px`;
+                deleteNodeBtn.style.top = `${y}px`;
+                deleteNodeBtn.style.display = "block"; // Allow deleting symbols
+                addNodeBtn.style.display = "none";
+                return;
+            }
 
-    addNodeBtn.style.left = `${x + 20}px`;
-    addNodeBtn.style.top = `${y}px`;
-    addNodeBtn.style.display = "block";
+            addNodeBtn.style.left = `${x + 20}px`;
+            addNodeBtn.style.top = `${y}px`;
+            addNodeBtn.style.display = "block";
 
-    if (!links.some(link => link.source === node.id)) {
-        deleteNodeBtn.style.left = `${x - 50}px`;
-        deleteNodeBtn.style.top = `${y}px`;
-        deleteNodeBtn.style.display = "block";
-    } else {
-        deleteNodeBtn.style.display = "none";
-    }
-}
+            if (!links.some(link => link.source === node.id)) {
+                deleteNodeBtn.style.left = `${x - 50}px`;
+                deleteNodeBtn.style.top = `${y}px`;
+                deleteNodeBtn.style.display = "block";
+            } else {
+                deleteNodeBtn.style.display = "none";
+            }
+        }
 
 
         addNodeBtn.addEventListener("click", () => {
@@ -600,379 +638,486 @@ nodeElements.append("g") // Group the text and the background rect
 
         drawDiagram();
     </script>
-<script>
-    function selectPageSizeAndOrientation() {
-        const sizes = {
-            "A4": [210, 297],
-            "A3": [297, 420],
-            "A5": [148, 210],
-            "A2": [420, 594],
-            "A1": [594, 841],
-            "A0": [841, 1189]
-        };
+    <script>
+        function selectPageSizeAndOrientation() {
+            const sizes = {
+                "A4": [210, 297],
+                "A3": [297, 420],
+                "A5": [148, 210],
+                "A2": [420, 594],
+                "A1": [594, 841],
+                "A0": [841, 1189]
+            };
 
-        // Fetch selected values from dropdowns
-        const sizeChoice = document.getElementById("paperSize").value;
-        const orientation = document.getElementById("orientation").value;
+            // Fetch selected values from dropdowns
+            const sizeChoice = document.getElementById("paperSize").value;
+            const orientation = document.getElementById("orientation").value;
 
-        let [width, height] = sizes[sizeChoice];
-        if (orientation === "landscape") [width, height] = [height, width];
+            let [width, height] = sizes[sizeChoice];
+            if (orientation === "landscape") [width, height] = [height, width];
 
-        return { width, height, orientation };
+            return { width, height, orientation };
+        }
+
+// Global variable to track if save is in progress
+let isSaveInProgress = false;
+
+function saveAsImage(format, width, height) {
+    // Prevent multiple simultaneous saves
+    if (isSaveInProgress) {
+        console.log("Save operation already in progress, ignoring request");
+        return;
     }
-
-    function saveAsImage(format, width, height, orientation) {
+    
+    isSaveInProgress = true;
+    
+    // Always use landscape orientation
+    const orientation = "landscape";
+    
     const container = document.querySelector(".container");
+    
+    // Get all the interface elements to hide
     const menuBtn = document.getElementById("menuBtn");
     const addTextBoxBtn = document.getElementById("addTextBox");
+    const addNetworkBtn = document.getElementById("addNetworkBtn");
+    const addSignatureBtn = document.getElementById("addSignatureBtn");
+    const paperSizeLabel = document.querySelector("label[for='paperSize']");
+    const paperSizeSelect = document.getElementById("paperSize");
+    const orientationLabel = document.querySelector("label[for='orientation']");
+    const orientationSelect = document.getElementById("orientation");
+    const resetBtn = document.getElementById("resetBtn");
+    const savePngBtn = document.getElementById("savePngBtn");
+    const savePdfBtn = document.getElementById("savePdfBtn");
+    const menuList = document.getElementById("menuList");
+    const addNodeBtn = document.getElementById("addNodeBtn");
+    const deleteNodeBtn = document.getElementById("deleteNodeBtn");
+    const signatureInput = document.getElementById("signatureInput");
+    
+    // Store visibility states
+    const elementsToHide = [
+        menuBtn, addTextBoxBtn, addNetworkBtn, addSignatureBtn,
+        paperSizeLabel, paperSizeSelect, orientationLabel, orientationSelect,
+        resetBtn, savePngBtn, savePdfBtn, menuList, addNodeBtn, deleteNodeBtn, signatureInput
+    ];
+    
+    // Save original display states
+    const originalDisplayStates = elementsToHide.map(el => el ? el.style.display : null);
+    
+    // Hide all buttons and controls
+    elementsToHide.forEach(el => {
+        if (el) el.style.display = "none";
+    });
+    
+    // Temporarily move text boxes into the container
     const legendTable = document.getElementById("legendTable");
     const textBoxes = document.querySelectorAll(".text-box");
-
-    // Temporarily move the legend and text boxes into the container
+    const signatures = document.querySelectorAll('[id^="signature-"]');
+    
+    // Move elements into container for capture
     container.appendChild(legendTable);
     textBoxes.forEach(textBox => container.appendChild(textBox));
+    signatures.forEach(sig => container.appendChild(sig));
 
-    // Hide buttons before capturing
-    menuBtn.style.display = "none";
-    addTextBoxBtn.style.display = "none";
-
+    // Now capture the image
     html2canvas(container, { backgroundColor: "#ffffff", scale: 3 }).then(canvas => {
-        if (format === "png") {
-            const link = document.createElement("a");
-            link.href = canvas.toDataURL("image/png");
-            link.download = `diagram_${width}x${height}_${orientation}.png`;
-            link.click();
-        } else if (format === "pdf") {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({
-                orientation: orientation,
-                unit: "mm",
-                format: [width, height]
+        try {
+            if (format === "png") {
+                const link = document.createElement("a");
+                link.href = canvas.toDataURL("image/png");
+                link.download = `diagram_${width}x${height}_landscape.png`;
+                document.body.appendChild(link); // Temporarily add to body
+                link.click();
+                document.body.removeChild(link); // Remove after clicking
+                
+            } else if (format === "pdf") {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: "landscape", // Always use landscape
+                    unit: "mm",
+                    format: [width, height]
+                });
+
+                const imgData = canvas.toDataURL("image/png");
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // Maintain aspect ratio
+
+                pdf.addImage(imgData, "PNG", 10, 10, pdfWidth - 20, pdfHeight - 20);
+                pdf.save(`diagram_${width}x${height}_landscape.pdf`);
+            }
+        } finally {
+            // Restore everything after download regardless of format
+            restoreElements();
+            
+            // Reset the save in progress flag
+            setTimeout(() => {
+                isSaveInProgress = false;
+            }, 500); // Add a small delay to prevent rapid double-clicks
+        }
+    });
+    
+    function restoreElements() {
+        // Restore original display states
+        elementsToHide.forEach((el, i) => {
+            if (el) el.style.display = originalDisplayStates[i];
+        });
+        
+        // Move legend and text boxes back to body
+        document.body.appendChild(legendTable);
+        textBoxes.forEach(textBox => document.body.appendChild(textBox));
+        signatures.forEach(sig => document.body.appendChild(sig));
+    }
+}
+
+// Remove any existing event listeners first by replacing the buttons
+document.getElementById("savePdfBtn").outerHTML = document.getElementById("savePdfBtn").outerHTML;
+document.getElementById("savePngBtn").outerHTML = document.getElementById("savePngBtn").outerHTML;
+
+// Now add new event listeners
+document.getElementById("savePdfBtn").addEventListener("click", function(event) {
+    event.preventDefault(); // Prevent default behavior
+    event.stopPropagation(); // Stop propagation to prevent bubbling
+    
+    const { width, height } = selectPageSizeAndOrientation();
+    saveAsImage("pdf", width, height);
+});
+
+document.getElementById("savePngBtn").addEventListener("click", function(event) {
+    event.preventDefault(); // Prevent default behavior
+    event.stopPropagation(); // Stop propagation to prevent bubbling
+    
+    const { width, height } = selectPageSizeAndOrientation();
+    saveAsImage("png", width, height);
+});
+
+// Modify selectPageSizeAndOrientation to always return landscape
+function selectPageSizeAndOrientation() {
+    const paperSize = document.getElementById("paperSize").value;
+    let width, height;
+    
+    switch (paperSize) {
+        case "A4":
+            width = 297;
+            height = 210;
+            break;
+        case "A3":
+            width = 420;
+            height = 297;
+            break;
+        case "Letter":
+            width = 279.4;
+            height = 215.9;
+            break;
+        default:
+            width = 297;
+            height = 210; // Default to A4
+    }
+    
+    // Always return landscape dimensions (width > height)
+    if (width < height) {
+        [width, height] = [height, width];
+    }
+    
+    return {
+        width,
+        height,
+        orientation: "landscape" 
+    };
+}
+
+
+        document.getElementById("addTextBox").addEventListener("click", () => {
+            const textBox = document.createElement("div");
+            textBox.className = "text-box";
+            textBox.contentEditable = true;
+            textBox.textContent = "Type here...";
+
+            Object.assign(textBox.style, {
+                position: "absolute",
+                top: `${Math.random() * 400 + 50}px`, // Random position to prevent overlap
+                left: `${Math.random() * 400 + 50}px`,
+                background: "none",
+                padding: "5px",
+                border: "1px solid transparent", // Initially hidden
+                cursor: "move",
+                width: "150px",
+                minHeight: "30px",
+                overflow: "auto",
+                outline: "none"
             });
 
-            const imgData = canvas.toDataURL("image/png");
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // Maintain aspect ratio
+            // Create a resize handle
+            const resizeHandle = document.createElement("div");
+            Object.assign(resizeHandle.style, {
+                width: "10px",
+                height: "10px",
+                background: "black",
+                position: "absolute",
+                bottom: "0",
+                right: "0",
+                cursor: "se-resize",
+                display: "none" // Initially hidden
+            });
 
-            pdf.addImage(imgData, "PNG", 10, 10, pdfWidth - 20, pdfHeight - 20);
+            // Create a delete button
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "delete-btn";
+            deleteBtn.textContent = "Delete";
+            Object.assign(deleteBtn.style, {
+                position: "absolute",
+                background: "red",
+                color: "white",
+                border: "none",
+                padding: "5px",
+                cursor: "pointer",
+                display: "none",
+                zIndex: "1000"
+            });
 
-            // Capture the legend separately if needed
-            html2canvas(legendTable, { backgroundColor: "#ffffff", scale: 3 }).then(legendCanvas => {
-                const legendImg = legendCanvas.toDataURL("image/png");
-                pdf.addImage(legendImg, "PNG", pdfWidth - 80, 10, 70, 60); // Adjust position & size
+            deleteBtn.addEventListener("click", () => {
+                textBox.remove();
+                deleteBtn.remove();
+                document.querySelectorAll(".toolbar").forEach(el => el.remove());
+            });
 
-                pdf.save(`diagram_${width}x${height}_${orientation}.pdf`);
-                
-                // Restore legend and text boxes to original positions
-                document.body.appendChild(legendTable);
+            textBox.appendChild(resizeHandle);
+            document.body.appendChild(textBox);
+            document.body.appendChild(deleteBtn);
+
+            makeDraggable(textBox);
+            makeResizable(textBox, resizeHandle);
+
+            // Show toolbar, border, resize handle, and delete button on click
+            textBox.addEventListener("click", (event) => {
+                event.stopPropagation(); // Prevent hiding when clicking inside
+                textBox.style.border = "1px solid black"; // Show border
+                resizeHandle.style.display = "block"; // Show resize handle
+                addToolbar(textBox);
+
+                // Position and show delete button
+                deleteBtn.style.left = `${parseInt(textBox.style.left) + parseInt(textBox.style.width) + 10}px`;
+                deleteBtn.style.top = `${parseInt(textBox.style.top)}px`;
+                deleteBtn.style.display = "block";
+            });
+
+            // Hide toolbar, border, resize handle, and delete button when clicking outside
+            document.addEventListener("click", (event) => {
+                if (!textBox.contains(event.target) && !document.querySelector(".toolbar")?.contains(event.target) && event.target !== deleteBtn) {
+                    document.querySelectorAll(".toolbar").forEach(el => el.remove());
+                    textBox.style.border = "1px solid transparent"; // Hide border
+                    resizeHandle.style.display = "none"; // Hide resize handle
+                    deleteBtn.style.display = "none"; // Hide delete button
+                }
+            });
+        });
+
+
+
+
+        // Function to make text box draggable
+        function makeDraggable(element) {
+            let offsetX, offsetY, isDragging = false;
+
+            element.addEventListener("mousedown", (event) => {
+                if (event.target !== element) return; // Prevent dragging while resizing
+                isDragging = true;
+                offsetX = event.clientX - element.getBoundingClientRect().left;
+                offsetY = event.clientY - element.getBoundingClientRect().top;
+                element.style.zIndex = 1000;
+            });
+
+            document.addEventListener("mousemove", (event) => {
+                if (isDragging) {
+                    element.style.left = event.clientX - offsetX + "px";
+                    element.style.top = event.clientY - offsetY + "px";
+                    moveToolbar(element);
+                }
+            });
+
+            document.addEventListener("mouseup", () => {
+                isDragging = false;
+            });
+        }
+
+        // Function to make text box resizable
+        function makeResizable(element, handle) {
+            let isResizing = false;
+
+            handle.addEventListener("mousedown", (event) => {
+                isResizing = true;
+                event.stopPropagation(); // Prevent triggering drag
+            });
+
+            document.addEventListener("mousemove", (event) => {
+                if (isResizing) {
+                    element.style.width = event.clientX - element.getBoundingClientRect().left + "px";
+                    element.style.height = event.clientY - element.getBoundingClientRect().top + "px";
+                    moveToolbar(element);
+                }
+            });
+
+            document.addEventListener("mouseup", () => {
+                isResizing = false;
+            });
+        }
+
+        // Function to add text formatting toolbar (only appears on click)
+        function addToolbar(textBox) {
+            // Remove any existing toolbar
+            document.querySelectorAll(".toolbar").forEach(el => el.remove());
+
+            const toolbar = document.createElement("div");
+            toolbar.className = "toolbar";
+
+            Object.assign(toolbar.style, {
+                position: "absolute",
+                top: `${parseInt(textBox.style.top) - 35}px`,
+                left: textBox.style.left,
+                background: "#f0f0f0",
+                padding: "5px",
+                border: "1px solid black",
+                display: "flex",
+                gap: "5px"
+            });
+
+            // Create formatting buttons
+            const boldBtn = createFormatButton("B", "bold");
+            const italicBtn = createFormatButton("I", "italic");
+            const underlineBtn = createFormatButton("U", "underline");
+            const fontSizeBtn = createFontSizeDropdown();
+            const alignBtn = createAlignDropdown();
+
+            toolbar.appendChild(boldBtn);
+            toolbar.appendChild(italicBtn);
+            toolbar.appendChild(underlineBtn);
+            toolbar.appendChild(fontSizeBtn);
+            toolbar.appendChild(alignBtn);
+
+            document.body.appendChild(toolbar);
+
+            function createFormatButton(label, command) {
+                const btn = document.createElement("button");
+                btn.textContent = label;
+                btn.style.padding = "5px";
+                btn.style.cursor = "pointer";
+                btn.style.border = "1px solid black";
+                btn.style.background = "white";
+
+                btn.addEventListener("click", () => {
+                    document.execCommand(command, false, null);
+                });
+
+                return btn;
+            }
+
+            function createFontSizeDropdown() {
+                const select = document.createElement("select");
+                [12, 14, 16, 18, 20, 24, 28, 32].forEach(size => {
+                    const option = document.createElement("option");
+                    option.value = size;
+                    option.textContent = size + "px";
+                    select.appendChild(option);
+                });
+
+                select.addEventListener("change", () => {
+                    document.execCommand("fontSize", false, "7");
+                    document.querySelectorAll("font[size='7']").forEach(font => {
+                        font.removeAttribute("size");
+                        font.style.fontSize = select.value + "px";
+                    });
+                });
+
+                return select;
+            }
+
+            function createAlignDropdown() {
+                const select = document.createElement("select");
+                [["Left", "left"], ["Center", "center"], ["Right", "right"]].forEach(([label, value]) => {
+                    const option = document.createElement("option");
+                    option.value = value;
+                    option.textContent = label;
+                    select.appendChild(option);
+                });
+
+                select.addEventListener("change", () => {
+                    document.execCommand("justify" + select.value.charAt(0).toUpperCase() + select.value.slice(1));
+                });
+
+                return select;
+            }
+
+            // Hide toolbar when clicking outside of text box or toolbar
+            setTimeout(() => {
+                document.addEventListener("click", (event) => {
+                    if (!toolbar.contains(event.target) && !textBox.contains(event.target)) {
+                        toolbar.remove();
+                    }
+                });
+            }, 100);
+        }
+
+        // Function to move toolbar when dragging/resizing
+        function moveToolbar(textBox) {
+            const toolbar = document.querySelector(".toolbar");
+            if (toolbar) {
+                toolbar.style.top = `${parseInt(textBox.style.top) - 35}px`;
+                toolbar.style.left = textBox.style.left;
+            }
+        }
+
+        // Attach event listeners AFTER defining the functions
+        document.getElementById("savePngBtn").addEventListener("click", function () {
+            const { width, height, orientation } = selectPageSizeAndOrientation();
+            saveAsImage("png", width, height, orientation);
+        });
+
+        document.getElementById("savePdfBtn").addEventListener("click", function () {
+            const container = document.querySelector(".container");
+            const menuBtn = document.getElementById("menuBtn");
+            const addTextBoxBtn = document.getElementById("addTextBox");
+
+            // Hide buttons before capturing
+            menuBtn.style.display = "none";
+            addTextBoxBtn.style.display = "none";
+
+            // Move text boxes into the container for capture
+            const textBoxes = document.querySelectorAll(".text-box");
+            textBoxes.forEach(textBox => container.appendChild(textBox));
+
+            html2canvas(container, {
+                backgroundColor: "#ffffff",
+                scale: 3 // Increases resolution for better PDF quality
+            }).then(canvas => {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: "landscape",
+                    unit: "mm",
+                    format: "a4"
+                });
+
+                const imgData = canvas.toDataURL("image/png");
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // Maintain aspect ratio
+
+                pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+                pdf.save("diagram.pdf");
+
+                // Restore buttons and text boxes after saving
+                menuBtn.style.display = "block";
+                addTextBoxBtn.style.display = "block";
                 textBoxes.forEach(textBox => document.body.appendChild(textBox));
             });
-        } else {
-            document.body.appendChild(legendTable);
-            textBoxes.forEach(textBox => document.body.appendChild(textBox));
-        }
-
-        // Restore buttons and text boxes
-        menuBtn.style.display = "block";
-        addTextBoxBtn.style.display = "block";
-    });
-}
-
-
-
-document.getElementById("addTextBox").addEventListener("click", () => {
-    const textBox = document.createElement("div");
-    textBox.className = "text-box";
-    textBox.contentEditable = true;
-    textBox.textContent = "Type here...";
-
-    Object.assign(textBox.style, {
-        position: "absolute",
-        top: `${Math.random() * 400 + 50}px`, // Random position to prevent overlap
-        left: `${Math.random() * 400 + 50}px`,
-        background: "none",
-        padding: "5px",
-        border: "1px solid transparent", // Initially hidden
-        cursor: "move",
-        width: "150px",
-        minHeight: "30px",
-        overflow: "auto",
-        outline: "none"
-    });
-
-    // Create a resize handle
-    const resizeHandle = document.createElement("div");
-    Object.assign(resizeHandle.style, {
-        width: "10px",
-        height: "10px",
-        background: "black",
-        position: "absolute",
-        bottom: "0",
-        right: "0",
-        cursor: "se-resize",
-        display: "none" // Initially hidden
-    });
-
-    // Create a delete button
-    const deleteBtn = document.createElement("button");
-    deleteBtn.className = "delete-btn";
-    deleteBtn.textContent = "Delete";
-    Object.assign(deleteBtn.style, {
-        position: "absolute",
-        background: "red",
-        color: "white",
-        border: "none",
-        padding: "5px",
-        cursor: "pointer",
-        display: "none",
-        zIndex: "1000"
-    });
-
-    deleteBtn.addEventListener("click", () => {
-        textBox.remove();
-        deleteBtn.remove();
-        document.querySelectorAll(".toolbar").forEach(el => el.remove());
-    });
-
-    textBox.appendChild(resizeHandle);
-    document.body.appendChild(textBox);
-    document.body.appendChild(deleteBtn);
-
-    makeDraggable(textBox);
-    makeResizable(textBox, resizeHandle);
-    
-    // Show toolbar, border, resize handle, and delete button on click
-    textBox.addEventListener("click", (event) => {
-        event.stopPropagation(); // Prevent hiding when clicking inside
-        textBox.style.border = "1px solid black"; // Show border
-        resizeHandle.style.display = "block"; // Show resize handle
-        addToolbar(textBox);
-
-        // Position and show delete button
-        deleteBtn.style.left = `${parseInt(textBox.style.left) + parseInt(textBox.style.width) + 10}px`;
-        deleteBtn.style.top = `${parseInt(textBox.style.top)}px`;
-        deleteBtn.style.display = "block";
-    });
-
-    // Hide toolbar, border, resize handle, and delete button when clicking outside
-    document.addEventListener("click", (event) => {
-        if (!textBox.contains(event.target) && !document.querySelector(".toolbar")?.contains(event.target) && event.target !== deleteBtn) {
-            document.querySelectorAll(".toolbar").forEach(el => el.remove());
-            textBox.style.border = "1px solid transparent"; // Hide border
-            resizeHandle.style.display = "none"; // Hide resize handle
-            deleteBtn.style.display = "none"; // Hide delete button
-        }
-    });
-});
-
-
-
-
-// Function to make text box draggable
-function makeDraggable(element) {
-    let offsetX, offsetY, isDragging = false;
-
-    element.addEventListener("mousedown", (event) => {
-        if (event.target !== element) return; // Prevent dragging while resizing
-        isDragging = true;
-        offsetX = event.clientX - element.getBoundingClientRect().left;
-        offsetY = event.clientY - element.getBoundingClientRect().top;
-        element.style.zIndex = 1000;
-    });
-
-    document.addEventListener("mousemove", (event) => {
-        if (isDragging) {
-            element.style.left = event.clientX - offsetX + "px";
-            element.style.top = event.clientY - offsetY + "px";
-            moveToolbar(element);
-        }
-    });
-
-    document.addEventListener("mouseup", () => {
-        isDragging = false;
-    });
-}
-
-// Function to make text box resizable
-function makeResizable(element, handle) {
-    let isResizing = false;
-
-    handle.addEventListener("mousedown", (event) => {
-        isResizing = true;
-        event.stopPropagation(); // Prevent triggering drag
-    });
-
-    document.addEventListener("mousemove", (event) => {
-        if (isResizing) {
-            element.style.width = event.clientX - element.getBoundingClientRect().left + "px";
-            element.style.height = event.clientY - element.getBoundingClientRect().top + "px";
-            moveToolbar(element);
-        }
-    });
-
-    document.addEventListener("mouseup", () => {
-        isResizing = false;
-    });
-}
-
-// Function to add text formatting toolbar (only appears on click)
-function addToolbar(textBox) {
-    // Remove any existing toolbar
-    document.querySelectorAll(".toolbar").forEach(el => el.remove());
-
-    const toolbar = document.createElement("div");
-    toolbar.className = "toolbar";
-
-    Object.assign(toolbar.style, {
-        position: "absolute",
-        top: `${parseInt(textBox.style.top) - 35}px`,
-        left: textBox.style.left,
-        background: "#f0f0f0",
-        padding: "5px",
-        border: "1px solid black",
-        display: "flex",
-        gap: "5px"
-    });
-
-    // Create formatting buttons
-    const boldBtn = createFormatButton("B", "bold");
-    const italicBtn = createFormatButton("I", "italic");
-    const underlineBtn = createFormatButton("U", "underline");
-    const fontSizeBtn = createFontSizeDropdown();
-    const alignBtn = createAlignDropdown();
-
-    toolbar.appendChild(boldBtn);
-    toolbar.appendChild(italicBtn);
-    toolbar.appendChild(underlineBtn);
-    toolbar.appendChild(fontSizeBtn);
-    toolbar.appendChild(alignBtn);
-
-    document.body.appendChild(toolbar);
-
-    function createFormatButton(label, command) {
-        const btn = document.createElement("button");
-        btn.textContent = label;
-        btn.style.padding = "5px";
-        btn.style.cursor = "pointer";
-        btn.style.border = "1px solid black";
-        btn.style.background = "white";
-
-        btn.addEventListener("click", () => {
-            document.execCommand(command, false, null);
         });
 
-        return btn;
-    }
-
-    function createFontSizeDropdown() {
-        const select = document.createElement("select");
-        [12, 14, 16, 18, 20, 24, 28, 32].forEach(size => {
-            const option = document.createElement("option");
-            option.value = size;
-            option.textContent = size + "px";
-            select.appendChild(option);
-        });
-
-        select.addEventListener("change", () => {
-            document.execCommand("fontSize", false, "7");
-            document.querySelectorAll("font[size='7']").forEach(font => {
-                font.removeAttribute("size");
-                font.style.fontSize = select.value + "px";
-            });
-        });
-
-        return select;
-    }
-
-    function createAlignDropdown() {
-        const select = document.createElement("select");
-        [["Left", "left"], ["Center", "center"], ["Right", "right"]].forEach(([label, value]) => {
-            const option = document.createElement("option");
-            option.value = value;
-            option.textContent = label;
-            select.appendChild(option);
-        });
-
-        select.addEventListener("change", () => {
-            document.execCommand("justify" + select.value.charAt(0).toUpperCase() + select.value.slice(1));
-        });
-
-        return select;
-    }
-
-    // Hide toolbar when clicking outside of text box or toolbar
-    setTimeout(() => {
-        document.addEventListener("click", (event) => {
-            if (!toolbar.contains(event.target) && !textBox.contains(event.target)) {
-                toolbar.remove();
-            }
-        });
-    }, 100);
-}
-
-// Function to move toolbar when dragging/resizing
-function moveToolbar(textBox) {
-    const toolbar = document.querySelector(".toolbar");
-    if (toolbar) {
-        toolbar.style.top = `${parseInt(textBox.style.top) - 35}px`;
-        toolbar.style.left = textBox.style.left;
-    }
-}
-
-    // Attach event listeners AFTER defining the functions
-    document.getElementById("savePngBtn").addEventListener("click", function () {
-        const { width, height, orientation } = selectPageSizeAndOrientation();
-        saveAsImage("png", width, height, orientation);
-    });
-
-    document.getElementById("savePdfBtn").addEventListener("click", function () {
-    const container = document.querySelector(".container");
-    const menuBtn = document.getElementById("menuBtn");
-    const addTextBoxBtn = document.getElementById("addTextBox");
-
-    // Hide buttons before capturing
-    menuBtn.style.display = "none";
-    addTextBoxBtn.style.display = "none";
-
-    // Move text boxes into the container for capture
-    const textBoxes = document.querySelectorAll(".text-box");
-    textBoxes.forEach(textBox => container.appendChild(textBox));
-
-    html2canvas(container, {
-        backgroundColor: "#ffffff",
-        scale: 3 // Increases resolution for better PDF quality
-    }).then(canvas => {
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-            orientation: "landscape",
-            unit: "mm",
-            format: "a4"
-        });
-
-        const imgData = canvas.toDataURL("image/png");
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // Maintain aspect ratio
-
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-        pdf.save("diagram.pdf");
-
-        // Restore buttons and text boxes after saving
-        menuBtn.style.display = "block";
-        addTextBoxBtn.style.display = "block";
-        textBoxes.forEach(textBox => document.body.appendChild(textBox));
-    });
-});
 
 
-
-</script>
-<script>
-   // document.getElementById("addTextBox").addEventListener("click", () => {
+    </script>
+    <script>
+        // document.getElementById("addTextBox").addEventListener("click", () => {
         const textBox = document.createElement("div");
         textBox.className = "text-box";
         textBox.contentEditable = true;
         textBox.textContent = "Type here...";
-        
+
         Object.assign(textBox.style, {
             position: "absolute",
             top: "100px",
@@ -989,54 +1134,91 @@ function moveToolbar(textBox) {
         makeDraggable(textBox);
     });
 
-    function makeDraggable(element) {
-        let offsetX, offsetY, isDragging = false;
+        function makeDraggable(element) {
+            let offsetX, offsetY, isDragging = false;
 
-        element.addEventListener("mousedown", (event) => {
-            isDragging = true;
-            offsetX = event.clientX - element.getBoundingClientRect().left;
-            offsetY = event.clientY - element.getBoundingClientRect().top;
-            element.style.zIndex = 1000;
-        });
+            element.addEventListener("mousedown", (event) => {
+                isDragging = true;
+                offsetX = event.clientX - element.getBoundingClientRect().left;
+                offsetY = event.clientY - element.getBoundingClientRect().top;
+                element.style.zIndex = 1000;
+            });
 
-        document.addEventListener("mousemove", (event) => {
-            if (isDragging) {
-                element.style.left = event.clientX - offsetX + "px";
-                element.style.top = event.clientY - offsetY + "px";
-            }
-        });
+            document.addEventListener("mousemove", (event) => {
+                if (isDragging) {
+                    element.style.left = event.clientX - offsetX + "px";
+                    element.style.top = event.clientY - offsetY + "px";
+                }
+            });
 
-        document.addEventListener("mouseup", () => {
-            isDragging = false;
-        });
-    }
-</script>
+            document.addEventListener("mouseup", () => {
+                isDragging = false;
+            });
+        }
+    </script>
     <!-- Your existing content -->
-    
-    <div id="legendTable" style="position: absolute; top: 250px; left: 150px; background: none; padding: 10px; cursor: grab; display: inline-block; z-index: 1;">
+
+    <div id="legendTable"
+        style="position: absolute; top: 250px; left: 150px; background: none; padding: 10px; cursor: grab; display: inline-block; z-index: 1;">
         <h3 id="legendHeader" style="margin: 5; cursor: grab;">Legend</h3>
         <table style="border-collapse: collapse; text-align: left; width: auto;">
-            <tr style="border-bottom: 1px solid gray;"><th>Text/Symbol⠀⠀</th><th>Meaning</th></tr>
-            <tr style="border-bottom: 1px solid gray;"><td>DTR</td><td>Transformer Structure</td></tr>
-            <tr style="border-bottom: 1px solid gray;"><td>DP</td><td>Double Pole</td></tr>
-            <tr style="border-bottom: 1px solid gray;"><td>TP</td><td>Triple Pole</td></tr>
-            <tr style="border-bottom: 1px solid gray;"><td>4P</td><td>Four Pole</td></tr>
-            <tr style="border-bottom: 1px solid gray;"><td>HP</td><td>H Beam Pole</td></tr>
-            <tr style="border-bottom: 1px solid gray;"><td>RP</td><td>Rail Pole</td></tr>
-            <tr style="border-bottom: 1px solid gray;"><td>E</td><td>Earthing</td></tr>
-            <tr style="border-bottom: 1px solid gray;"><td>S</td><td>Stay Set</td></tr>
-            <tr style="border-bottom: 1px solid gray;"><td>8m</td><td>8m Pole</td></tr>
-            <tr style="border-bottom: 1px solid gray;"><td>9m</td><td>9m Pole</td></tr>
-            <tr style="border-bottom: 1px solid gray;"><td>—X—X—</td><td>Craddle Guard</td></tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <th>Text/Symbol⠀⠀</th>
+                <th>Meaning</th>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td>DTR</td>
+                <td>Transformer Structure</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td>DP</td>
+                <td>Double Pole</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td>TP</td>
+                <td>Triple Pole</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td>4P</td>
+                <td>Four Pole</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td>HP</td>
+                <td>H Beam Pole</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td>RP</td>
+                <td>Rail Pole</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td>E</td>
+                <td>Earthing</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td>S</td>
+                <td>Stay Set</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td>8m</td>
+                <td>8m Pole</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td>9m</td>
+                <td>9m Pole</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td>—X—X—</td>
+                <td>Craddle Guard</td>
+            </tr>
         </table>
     </div>
-    
+
     <script>
         // Make the table draggable only when clicking on the "Legend" header
         const legendTable = document.getElementById("legendTable");
         const legendHeader = document.getElementById("legendHeader");
         let isDragging = false, offsetX, offsetY;
-        
+
         legendHeader.addEventListener("mousedown", (event) => {
             isDragging = true;
             legendTable.style.cursor = "grabbing";
@@ -1044,25 +1226,197 @@ function moveToolbar(textBox) {
             offsetY = event.clientY - legendTable.getBoundingClientRect().top;
             event.stopPropagation(); // Prevent canvas panning
         });
-        
+
         document.addEventListener("mousemove", (event) => {
             if (isDragging) {
                 legendTable.style.left = event.clientX - offsetX + "px";
                 legendTable.style.top = event.clientY - offsetY + "px";
             }
         });
-        
+
         document.addEventListener("mouseup", () => {
             isDragging = false;
             legendTable.style.cursor = "grab";
         });
 
+        // Add this JavaScript code
+        // Add this JavaScript code
+        const signatureBtn = document.getElementById("addSignatureBtn");
+        const signatureInput = document.getElementById("signatureInput");
 
+        signatureBtn.addEventListener("click", () => {
+            signatureInput.value = '';
+            signatureInput.click();
+        });
+
+        signatureInput.addEventListener("change", (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const signatureId = 'signature-' + Date.now();
+
+                    // Create container div
+                    const container = document.createElement("div");
+                    container.id = signatureId;
+                    container.style.position = "absolute";
+                    container.style.top = "200px";
+                    container.style.left = "200px";
+                    container.style.cursor = "move";
+                    container.style.zIndex = "1000";
+                    container.style.position = "absolute";
+
+                    // Create image element
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.style.width = "150px";
+                    img.style.display = "block";
+
+                    // Create delete button
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.textContent = "Delete";
+                    deleteBtn.style.position = "absolute";
+                    deleteBtn.style.top = "-25px";
+                    deleteBtn.style.right = "0";
+                    deleteBtn.style.background = "red";
+                    deleteBtn.style.color = "white";
+                    deleteBtn.style.border = "none";
+                    deleteBtn.style.padding = "5px";
+                    deleteBtn.style.cursor = "pointer";
+                    deleteBtn.style.display = "none";
+                    deleteBtn.style.zIndex = "1001";
+
+                    // Create resize handle
+                    const resizeHandle = document.createElement("div");
+                    resizeHandle.style.position = "absolute";
+                    resizeHandle.style.width = "10px";
+                    resizeHandle.style.height = "10px";
+                    resizeHandle.style.background = "blue";
+                    resizeHandle.style.bottom = "0";
+                    resizeHandle.style.right = "0";
+                    resizeHandle.style.cursor = "se-resize";
+                    resizeHandle.style.display = "none";
+                    resizeHandle.style.zIndex = "1001";
+
+                    // Add hover effects
+                    container.addEventListener("mouseenter", () => {
+                        deleteBtn.style.display = "block";
+                        resizeHandle.style.display = "block";
+                    });
+
+                    container.addEventListener("mouseleave", () => {
+                        if (!isResizing) {
+                            deleteBtn.style.display = "none";
+                            resizeHandle.style.display = "none";
+                        }
+                    });
+
+                    // Make container draggable
+                    container.addEventListener("mousedown", function (e) {
+                        if (e.target === deleteBtn || e.target === resizeHandle) return;
+
+                        let isDragging = true;
+                        let currentX = e.clientX - parseInt(container.style.left);
+                        let currentY = e.clientY - parseInt(container.style.top);
+
+                        const moveHandler = function (e) {
+                            if (isDragging) {
+                                container.style.left = (e.clientX - currentX) + "px";
+                                container.style.top = (e.clientY - currentY) + "px";
+                            }
+                        };
+
+                        const upHandler = function () {
+                            isDragging = false;
+                            document.removeEventListener("mousemove", moveHandler);
+                            document.removeEventListener("mouseup", upHandler);
+                        };
+
+                        document.addEventListener("mousemove", moveHandler);
+                        document.addEventListener("mouseup", upHandler);
+                    });
+
+                    // Add resize functionality
+                    let isResizing = false;
+                    resizeHandle.addEventListener("mousedown", function (e) {
+                        isResizing = true;
+                        e.stopPropagation();
+
+                        const startX = e.clientX;
+                        const startY = e.clientY;
+                        const startWidth = img.offsetWidth;
+
+                        const moveHandler = function (e) {
+                            if (isResizing) {
+                                const newWidth = startWidth + (e.clientX - startX);
+                                if (newWidth > 50) { // Minimum width
+                                    img.style.width = newWidth + "px";
+                                }
+                            }
+                        };
+
+                        const upHandler = function () {
+                            isResizing = false;
+                            if (!container.matches(':hover')) {
+                                deleteBtn.style.display = "none";
+                                resizeHandle.style.display = "none";
+                            }
+                            document.removeEventListener("mousemove", moveHandler);
+                            document.removeEventListener("mouseup", upHandler);
+                        };
+
+                        document.addEventListener("mousemove", moveHandler);
+                        document.addEventListener("mouseup", upHandler);
+                    });
+
+                    // Add delete functionality
+                    deleteBtn.addEventListener("click", () => {
+                        container.remove();
+                    });
+
+                    // Offset each new signature
+                    const existingSignatures = document.querySelectorAll('[id^="signature-"]');
+                    if (existingSignatures.length > 0) {
+                        container.style.top = (200 + existingSignatures.length * 20) + "px";
+                        container.style.left = (200 + existingSignatures.length * 20) + "px";
+                    }
+
+                    // Assemble and add to document
+                    container.appendChild(img);
+                    container.appendChild(deleteBtn);
+                    container.appendChild(resizeHandle);
+                    document.querySelector(".container").appendChild(container);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+
+        // Disable right click
+        document.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+            alert('Right click is disabled on this page!');
+        });
+
+        // Disable keyboard shortcuts that could bypass right-click protection
+        document.addEventListener('keydown', function (event) {
+            // Prevent Ctrl+Shift+I (Inspector)
+            // Prevent Ctrl+U (View Source)
+            if (
+                (event.ctrlKey && event.shiftKey && event.key === 'I') ||
+                (event.ctrlKey && event.key === 'u')
+            ) {
+                event.preventDefault();
+                alert('This action is disabled!');
+            }
+        });
     </script>
-    
+
 
 </body>
+
 </html>
 
 </body>
+
 </html>
