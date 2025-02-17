@@ -238,7 +238,7 @@ linkLabels.append("text")
     });
 
 
-                // Draw labels for links
+// Draw labels for links
 container.selectAll(".link-label").data(links).enter()
     .append("text")
     .attr("class", "link-label")
@@ -309,6 +309,61 @@ container.selectAll(".link-label").data(links).enter()
     .attr("fill", d => d.text.match(/[\uD800-\uDFFF]/) ? "none" : d.color) // Transparent for symbols
     .attr("stroke", "none");
 
+
+
+// Add labels to nodes
+nodeElements.append("g") // Group the text and the background rect
+    .each(function(d) {
+        // Create the text element
+        const textElement = d3.select(this).append("text")
+            .attr("text-anchor", "middle")
+            .attr("dy", 35) // Position below the circle
+            .text(d => d.label || "E,S") // Use d.label if available, otherwise "E,S"
+            .attr("fill", "black") // Set text color
+            .style("font-size", "13px"); // Set font style
+
+        // Get the bounding box of the text to size the rectangle
+        const bbox = textElement.node().getBBox();
+
+        // Create a rectangle behind the text to simulate a background
+        d3.select(this).insert("rect", "text") // Insert the rect behind the text
+            .attr("x", bbox.x - 2) // Adjust to center the background around the text
+            .attr("y", bbox.y - 2) // Adjust to position the background around the text
+            .attr("width", bbox.width + 4) // Set width based on the text size
+            .attr("height", bbox.height + 4) // Set height based on the text size
+            .attr("fill", "white"); // Set background color without border
+
+        // Handle click event to edit the label
+        textElement.on("click", (event, d) => {
+            const input = document.createElement("input");
+            input.type = "text";
+            input.value = d.label || "E,S"; // Start with the existing label or "E,S"
+            input.style.position = "absolute";
+            input.style.left = `${event.pageX}px`;
+            input.style.top = `${event.pageY + 30}px`; // Position below the text
+            input.style.fontStyle = "italic"; // Apply italic style to the input field
+            input.style.backgroundColor = "white"; // Set input background color to white
+            document.body.appendChild(input);
+            input.focus();
+
+            input.addEventListener("blur", () => {
+                // Update d.label only if the input is not empty
+                const newValue = input.value.trim();
+                if (newValue !== "") {
+                    d.label = newValue; // Only update the label if the input is not empty
+                } else {
+                    d.label = null; // Set label to null (or remove it) if the input is empty
+                }
+                document.body.removeChild(input);
+                drawDiagram(); // Re-render the diagram
+            });
+        });
+    });
+
+
+
+
+        
             nodeElements.append("text")
                 .attr("text-anchor", "middle")
                 .attr("dy", 5)
