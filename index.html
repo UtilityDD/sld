@@ -145,12 +145,14 @@ let selectedSymbol = null;
 
 document.querySelectorAll(".symbolBtn").forEach(button => {
     button.addEventListener("click", (event) => {
-        selectedSymbol = event.target.dataset.symbol; // Store selected symbol for placement on click
+        selectedSymbol = event.target.dataset.symbol; // Store only the data-symbol value
     });
 });
 
+
    
 function drawDiagram() {
+            container.selectAll("*").rem
             container.selectAll("*").remove(); // Clear previous elements
 
             // Draw links
@@ -314,13 +316,22 @@ container.selectAll(".link-label").data(links).enter()
 // Add labels to nodes
 nodeElements.append("g") // Group the text and the background rect
     .each(function(d) {
+        // Set label to null only for symbols (emoji-like characters)
+        if (d.text.match(/[\uD800-\uDFFF]/) && !d.label) {
+            d.label = null;
+        } else if (!d.label) {
+            d.label = "E,S"; // Restore default label for normal nodes
+        }
+
         // Create the text element
         const textElement = d3.select(this).append("text")
             .attr("text-anchor", "middle")
             .attr("dy", 35) // Position below the circle
-            .text(d => d.label || "E,S") // Use d.label if available, otherwise "E,S"
+            .text(d => d.label || "") // Show label for non-symbol nodes
             .attr("fill", "black") // Set text color
             .style("font-size", "13px"); // Set font style
+
+
 
         // Get the bounding box of the text to size the rectangle
         const bbox = textElement.node().getBBox();
