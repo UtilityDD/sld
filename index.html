@@ -196,17 +196,16 @@
             // Draw links
             // Draw links with toggling line type on click
             // Define line styles
-            const lineStyles = [
-                {
-                    dasharray: "0",                    // Solid
+            const lineStyles = [{
+                    dasharray: "0", // Solid
                     crosses: false
                 },
                 {
-                    dasharray: "5,5",                  // Dashed
+                    dasharray: "5,5", // Dashed
                     crosses: false
                 },
                 {
-                    dasharray: "20,10",                // Dashed with crosses
+                    dasharray: "20,10", // Dashed with crosses
                     crosses: true
                 }
             ];
@@ -339,7 +338,45 @@
                     if (lineStyles[d.styleIndex].crosses) {
                         updateCrosses(this);
                     }
+                })
+
+
+                .on("dblclick", function (event, d) {
+                    // Create a color input element
+                    const colorPicker = document.createElement("input");
+                    colorPicker.type = "color";
+                    colorPicker.style.position = "absolute";
+                    colorPicker.style.left = `${event.pageX}px`;
+                    colorPicker.style.top = `${event.pageY}px`;
+                    colorPicker.value = d.color || "#000000"; // Set current color or default to black
+
+                    document.body.appendChild(colorPicker);
+                    colorPicker.focus();
+
+                    // Update color on selection
+                    colorPicker.addEventListener("input", () => {
+                        d.color = colorPicker.value;
+                        const line = d3.select(this);
+                        line.attr("stroke", d.color);
+
+                        // Update crosses color if they exist
+                        if (lineStyles[d.styleIndex].crosses) {
+                            const parent = d3.select(this.parentNode);
+                            parent.select(`.crosses-${d.source}-${d.target}`)
+                                .selectAll(".cross-line")
+                                .attr("stroke", d.color);
+                        }
+                    });
+
+                    // Remove color picker when focus is lost
+                    colorPicker.addEventListener("blur", () => {
+                        document.body.removeChild(colorPicker);
+                    });
+
+                    // Prevent event from bubbling
+                    event.stopPropagation();
                 });
+
 
             // Drag behavior
             const drag = d3.drag()
