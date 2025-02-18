@@ -64,15 +64,15 @@
 
         <div id="menuList"
             style="display: none; position: absolute; top: 40px; left: 10px; background: white; padding: 10px; border: 1px solid #ddd;">
-            <button class="symbolBtn" data-symbol="🌳">Big Tree</button>
-            <button class="symbolBtn" data-symbol="🌳🌲🌴">Forest</button>
-            <button class="symbolBtn" data-symbol="🕉️">Mandir</button>
-            <button class="symbolBtn" data-symbol="🕌">Masjid</button>
-            <button class="symbolBtn" data-symbol="🏫">School</button>
-            <button class="symbolBtn" data-symbol="🏢">Office</button>
-            <button class="symbolBtn" data-symbol="🐟">Pond</button>
-            <button class="symbolBtn" data-symbol="🏁🏁🏁🏁🏁🏁🏁🏁">Road</button>
-            <button class="symbolBtn" data-symbol="🏁🏁">Create Road</button>
+            <button class="symbolBtn" data-symbol="🌳">🌳</button>
+            <button class="symbolBtn" data-symbol="🌳🌲🌴">🌳🌲🌴</button>
+            <button class="symbolBtn" data-symbol="🕉️">🕉️</button>
+            <button class="symbolBtn" data-symbol="🕌">🕌</button>
+            <button class="symbolBtn" data-symbol="🏫">🏫</button>
+            <button class="symbolBtn" data-symbol="🏢">🏢</button>
+            <button class="symbolBtn" data-symbol="🐟">🐟</button>
+            <button class="symbolBtn" data-symbol="🏁🏁🏁🏁🏁🏁🏁🏁">🏁🏁🏁🏁🏁🏁🏁🏁</button>
+            <button class="symbolBtn" data-symbol="🏁">🏁</button>
 
 
 
@@ -82,6 +82,81 @@
     </div>
 
     <button id="addNodeBtn" class="control-btn">Add</button>
+
+
+    <!-- Add this div for the Summary Table -->
+    <div id="summaryTable"
+        style="position: absolute; top: 250px; right: 100px; background: none; padding: 10px; cursor: grab; display: inline-block; z-index: 1;">
+        <h3 id="summaryHeader" style="margin: 5; cursor: grab;">Summary</h3>
+        <table id="editableSummaryTable" style="border-collapse: collapse; text-align: left; width: auto;">
+            <tr style="border-bottom: 1px solid gray;">
+                <th style="min-width: 100px;">Item⠀⠀</th>
+                <th style="min-width: 150px;">Quantity</th>
+            </tr>
+            <!-- 15 editable rows -->
+            <tr style="border-bottom: 1px solid gray;">
+                <td contenteditable="true">Item 1</td>
+                <td contenteditable="true">Detail 1</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td contenteditable="true">Item 2</td>
+                <td contenteditable="true">Detail 2</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td contenteditable="true">Item 3</td>
+                <td contenteditable="true">Detail 3</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td contenteditable="true">Item 4</td>
+                <td contenteditable="true">Detail 4</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td contenteditable="true">Item 5</td>
+                <td contenteditable="true">Detail 5</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td contenteditable="true">Item 6</td>
+                <td contenteditable="true">Detail 6</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td contenteditable="true">Item 7</td>
+                <td contenteditable="true">Detail 7</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td contenteditable="true">Item 8</td>
+                <td contenteditable="true">Detail 8</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td contenteditable="true">Item 9</td>
+                <td contenteditable="true">Detail 9</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td contenteditable="true">Item 10</td>
+                <td contenteditable="true">Detail 10</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td contenteditable="true">Item 11</td>
+                <td contenteditable="true">Detail 11</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td contenteditable="true">Item 12</td>
+                <td contenteditable="true">Detail 12</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td contenteditable="true">Item 13</td>
+                <td contenteditable="true">Detail 13</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td contenteditable="true">Item 14</td>
+                <td contenteditable="true">Detail 14</td>
+            </tr>
+            <tr style="border-bottom: 1px solid gray;">
+                <td contenteditable="true">Item 15</td>
+                <td contenteditable="true">Detail 15</td>
+            </tr>
+        </table>
+    </div>
+
 
     <!-- Save Buttons -->
     <!-- Dropdowns for Paper Size and Orientation -->
@@ -197,17 +272,17 @@
             // Draw links with toggling line type on click
             // Define line styles
             const lineStyles = [{
-                    dasharray: "0", // Solid
-                    crosses: false
-                },
-                {
-                    dasharray: "5,5", // Dashed
-                    crosses: false
-                },
-                {
-                    dasharray: "20,10", // Dashed with crosses
-                    crosses: true
-                }
+                dasharray: "0", // Solid
+                crosses: false
+            },
+            {
+                dasharray: "5,5", // Dashed
+                crosses: false
+            },
+            {
+                dasharray: "20,10", // Dashed with crosses
+                crosses: true
+            }
             ];
 
             // Function to create/update crosses for a line
@@ -508,7 +583,7 @@
                 .on("click", (event, d) => {
                     selectedNode = d;
                     positionButtons(event.pageX, event.pageY, d);
-                    setTimeout(hideButtons, 2000);
+                    setTimeout(hideButtons, 1500);
                 })
 
                 .on("dblclick", (event, d) => {
@@ -696,170 +771,173 @@
             return { width, height, orientation };
         }
 
-// Global variable to track if save is in progress
-let isSaveInProgress = false;
+        // Global variable to track if save is in progress
+        let isSaveInProgress = false;
 
-function saveAsImage(format, width, height) {
-    // Prevent multiple simultaneous saves
-    if (isSaveInProgress) {
-        console.log("Save operation already in progress, ignoring request");
-        return;
-    }
-    
-    isSaveInProgress = true;
-    
-    // Always use landscape orientation
-    const orientation = "landscape";
-    
-    const container = document.querySelector(".container");
-    
-    // Get all the interface elements to hide
-    const menuBtn = document.getElementById("menuBtn");
-    const addTextBoxBtn = document.getElementById("addTextBox");
-    const addNetworkBtn = document.getElementById("addNetworkBtn");
-    const addSignatureBtn = document.getElementById("addSignatureBtn");
-    const paperSizeLabel = document.querySelector("label[for='paperSize']");
-    const paperSizeSelect = document.getElementById("paperSize");
-    const orientationLabel = document.querySelector("label[for='orientation']");
-    const orientationSelect = document.getElementById("orientation");
-    const resetBtn = document.getElementById("resetBtn");
-    const savePngBtn = document.getElementById("savePngBtn");
-    const savePdfBtn = document.getElementById("savePdfBtn");
-    const menuList = document.getElementById("menuList");
-    const addNodeBtn = document.getElementById("addNodeBtn");
-    const deleteNodeBtn = document.getElementById("deleteNodeBtn");
-    const signatureInput = document.getElementById("signatureInput");
-    
-    // Store visibility states
-    const elementsToHide = [
-        menuBtn, addTextBoxBtn, addNetworkBtn, addSignatureBtn,
-        paperSizeLabel, paperSizeSelect, orientationLabel, orientationSelect,
-        resetBtn, savePngBtn, savePdfBtn, menuList, addNodeBtn, deleteNodeBtn, signatureInput
-    ];
-    
-    // Save original display states
-    const originalDisplayStates = elementsToHide.map(el => el ? el.style.display : null);
-    
-    // Hide all buttons and controls
-    elementsToHide.forEach(el => {
-        if (el) el.style.display = "none";
-    });
-    
-    // Temporarily move text boxes into the container
-    const legendTable = document.getElementById("legendTable");
-    const textBoxes = document.querySelectorAll(".text-box");
-    const signatures = document.querySelectorAll('[id^="signature-"]');
-    
-    // Move elements into container for capture
-    container.appendChild(legendTable);
-    textBoxes.forEach(textBox => container.appendChild(textBox));
-    signatures.forEach(sig => container.appendChild(sig));
+        function saveAsImage(format, width, height) {
+            // Prevent multiple simultaneous saves
+            if (isSaveInProgress) {
+                console.log("Save operation already in progress, ignoring request");
+                return;
+            }
 
-    // Now capture the image
-    html2canvas(container, { backgroundColor: "#ffffff", scale: 3 }).then(canvas => {
-        try {
-            if (format === "png") {
-                const link = document.createElement("a");
-                link.href = canvas.toDataURL("image/png");
-                link.download = `diagram_${width}x${height}_landscape.png`;
-                document.body.appendChild(link); // Temporarily add to body
-                link.click();
-                document.body.removeChild(link); // Remove after clicking
-                
-            } else if (format === "pdf") {
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({
-                    orientation: "landscape", // Always use landscape
-                    unit: "mm",
-                    format: [width, height]
+            isSaveInProgress = true;
+
+            // Always use landscape orientation
+            const orientation = "landscape";
+
+            const container = document.querySelector(".container");
+            const summaryTable = document.getElementById("summaryTable");
+            container.appendChild(summaryTable); // Move summaryTable inside container
+
+
+            // Get all the interface elements to hide
+            const menuBtn = document.getElementById("menuBtn");
+            const addTextBoxBtn = document.getElementById("addTextBox");
+            const addNetworkBtn = document.getElementById("addNetworkBtn");
+            const addSignatureBtn = document.getElementById("addSignatureBtn");
+            const paperSizeLabel = document.querySelector("label[for='paperSize']");
+            const paperSizeSelect = document.getElementById("paperSize");
+            const orientationLabel = document.querySelector("label[for='orientation']");
+            const orientationSelect = document.getElementById("orientation");
+            const resetBtn = document.getElementById("resetBtn");
+            const savePngBtn = document.getElementById("savePngBtn");
+            const savePdfBtn = document.getElementById("savePdfBtn");
+            const menuList = document.getElementById("menuList");
+            const addNodeBtn = document.getElementById("addNodeBtn");
+            const deleteNodeBtn = document.getElementById("deleteNodeBtn");
+            const signatureInput = document.getElementById("signatureInput");
+
+            // Store visibility states
+            const elementsToHide = [
+                menuBtn, addTextBoxBtn, addNetworkBtn, addSignatureBtn,
+                paperSizeLabel, paperSizeSelect, orientationLabel, orientationSelect,
+                resetBtn, savePngBtn, savePdfBtn, menuList, addNodeBtn, deleteNodeBtn, signatureInput
+            ];
+
+            // Save original display states
+            const originalDisplayStates = elementsToHide.map(el => el ? el.style.display : null);
+
+            // Hide all buttons and controls
+            elementsToHide.forEach(el => {
+                if (el) el.style.display = "none";
+            });
+
+            // Temporarily move text boxes into the container
+            const legendTable = document.getElementById("legendTable");
+            const textBoxes = document.querySelectorAll(".text-box");
+            const signatures = document.querySelectorAll('[id^="signature-"]');
+
+            // Move elements into container for capture
+            container.appendChild(legendTable);
+            textBoxes.forEach(textBox => container.appendChild(textBox));
+            signatures.forEach(sig => container.appendChild(sig));
+
+            // Now capture the image
+            html2canvas(container, { backgroundColor: "#ffffff", scale: 3 }).then(canvas => {
+                try {
+                    if (format === "png") {
+                        const link = document.createElement("a");
+                        link.href = canvas.toDataURL("image/png");
+                        link.download = `diagram_${width}x${height}_landscape.png`;
+                        document.body.appendChild(link); // Temporarily add to body
+                        link.click();
+                        document.body.removeChild(link); // Remove after clicking
+
+                    } else if (format === "pdf") {
+                        const { jsPDF } = window.jspdf;
+                        const pdf = new jsPDF({
+                            orientation: "landscape", // Always use landscape
+                            unit: "mm",
+                            format: [width, height]
+                        });
+
+                        const imgData = canvas.toDataURL("image/png");
+                        const pdfWidth = pdf.internal.pageSize.getWidth();
+                        const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // Maintain aspect ratio
+
+                        pdf.addImage(imgData, "PNG", 10, 10, pdfWidth - 20, pdfHeight - 20);
+                        pdf.save(`diagram_${width}x${height}_landscape.pdf`);
+                    }
+                } finally {
+                    // Restore everything after download regardless of format
+                    restoreElements();
+
+                    // Reset the save in progress flag
+                    setTimeout(() => {
+                        isSaveInProgress = false;
+                    }, 500); // Add a small delay to prevent rapid double-clicks
+                }
+            });
+
+            function restoreElements() {
+                // Restore original display states
+                elementsToHide.forEach((el, i) => {
+                    if (el) el.style.display = originalDisplayStates[i];
                 });
 
-                const imgData = canvas.toDataURL("image/png");
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // Maintain aspect ratio
-
-                pdf.addImage(imgData, "PNG", 10, 10, pdfWidth - 20, pdfHeight - 20);
-                pdf.save(`diagram_${width}x${height}_landscape.pdf`);
+                // Move legend and text boxes back to body
+                document.body.appendChild(legendTable);
+                textBoxes.forEach(textBox => document.body.appendChild(textBox));
+                signatures.forEach(sig => document.body.appendChild(sig));
             }
-        } finally {
-            // Restore everything after download regardless of format
-            restoreElements();
-            
-            // Reset the save in progress flag
-            setTimeout(() => {
-                isSaveInProgress = false;
-            }, 500); // Add a small delay to prevent rapid double-clicks
         }
-    });
-    
-    function restoreElements() {
-        // Restore original display states
-        elementsToHide.forEach((el, i) => {
-            if (el) el.style.display = originalDisplayStates[i];
+
+        // Remove any existing event listeners first by replacing the buttons
+        document.getElementById("savePdfBtn").outerHTML = document.getElementById("savePdfBtn").outerHTML;
+        document.getElementById("savePngBtn").outerHTML = document.getElementById("savePngBtn").outerHTML;
+
+        // Now add new event listeners
+        document.getElementById("savePdfBtn").addEventListener("click", function (event) {
+            event.preventDefault(); // Prevent default behavior
+            event.stopPropagation(); // Stop propagation to prevent bubbling
+
+            const { width, height } = selectPageSizeAndOrientation();
+            saveAsImage("pdf", width, height);
         });
-        
-        // Move legend and text boxes back to body
-        document.body.appendChild(legendTable);
-        textBoxes.forEach(textBox => document.body.appendChild(textBox));
-        signatures.forEach(sig => document.body.appendChild(sig));
-    }
-}
 
-// Remove any existing event listeners first by replacing the buttons
-document.getElementById("savePdfBtn").outerHTML = document.getElementById("savePdfBtn").outerHTML;
-document.getElementById("savePngBtn").outerHTML = document.getElementById("savePngBtn").outerHTML;
+        document.getElementById("savePngBtn").addEventListener("click", function (event) {
+            event.preventDefault(); // Prevent default behavior
+            event.stopPropagation(); // Stop propagation to prevent bubbling
 
-// Now add new event listeners
-document.getElementById("savePdfBtn").addEventListener("click", function(event) {
-    event.preventDefault(); // Prevent default behavior
-    event.stopPropagation(); // Stop propagation to prevent bubbling
-    
-    const { width, height } = selectPageSizeAndOrientation();
-    saveAsImage("pdf", width, height);
-});
+            const { width, height } = selectPageSizeAndOrientation();
+            saveAsImage("png", width, height);
+        });
 
-document.getElementById("savePngBtn").addEventListener("click", function(event) {
-    event.preventDefault(); // Prevent default behavior
-    event.stopPropagation(); // Stop propagation to prevent bubbling
-    
-    const { width, height } = selectPageSizeAndOrientation();
-    saveAsImage("png", width, height);
-});
+        // Modify selectPageSizeAndOrientation to always return landscape
+        function selectPageSizeAndOrientation() {
+            const paperSize = document.getElementById("paperSize").value;
+            let width, height;
 
-// Modify selectPageSizeAndOrientation to always return landscape
-function selectPageSizeAndOrientation() {
-    const paperSize = document.getElementById("paperSize").value;
-    let width, height;
-    
-    switch (paperSize) {
-        case "A4":
-            width = 297;
-            height = 210;
-            break;
-        case "A3":
-            width = 420;
-            height = 297;
-            break;
-        case "Letter":
-            width = 279.4;
-            height = 215.9;
-            break;
-        default:
-            width = 297;
-            height = 210; // Default to A4
-    }
-    
-    // Always return landscape dimensions (width > height)
-    if (width < height) {
-        [width, height] = [height, width];
-    }
-    
-    return {
-        width,
-        height,
-        orientation: "landscape" 
-    };
-}
+            switch (paperSize) {
+                case "A4":
+                    width = 297;
+                    height = 210;
+                    break;
+                case "A3":
+                    width = 420;
+                    height = 297;
+                    break;
+                case "Letter":
+                    width = 279.4;
+                    height = 215.9;
+                    break;
+                default:
+                    width = 297;
+                    height = 210; // Default to A4
+            }
+
+            // Always return landscape dimensions (width > height)
+            if (width < height) {
+                [width, height] = [height, width];
+            }
+
+            return {
+                width,
+                height,
+                orientation: "landscape"
+            };
+        }
 
 
         document.getElementById("addTextBox").addEventListener("click", () => {
@@ -1291,142 +1369,190 @@ function selectPageSizeAndOrientation() {
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    const signatureId = 'signature-' + Date.now();
+                    const fileType = file.type;
+                    const signatureId = "signature-" + Date.now();
 
-                    // Create container div
+                    // Create a wrapper div for transformation
                     const container = document.createElement("div");
                     container.id = signatureId;
-                    container.style.position = "absolute";
-                    container.style.top = "200px";
-                    container.style.left = "200px";
-                    container.style.cursor = "move";
-                    container.style.zIndex = "1000";
-                    container.style.position = "absolute";
+                    Object.assign(container.style, {
+                        position: "absolute",
+                        top: "200px",
+                        left: "200px",
+                        cursor: "move",
+                        zIndex: "1000",
+                        display: "inline-block",
+                        transformOrigin: "center",
+                        transform: "rotate(0deg)"
+                    });
 
-                    // Create image element
-                    const img = document.createElement("img");
-                    img.src = e.target.result;
-                    img.style.width = "150px";
-                    img.style.display = "block";
+                    let contentElement;
+
+                    if (fileType === "image/svg+xml") {
+                        contentElement = document.createElement("object");
+                        contentElement.type = "image/svg+xml";
+                        contentElement.data = e.target.result;
+                    } else if (fileType === "image/png") {
+                        contentElement = document.createElement("img");
+                        contentElement.src = e.target.result;
+                    } else {
+                        alert("Unsupported file type! Please upload PNG or SVG.");
+                        return;
+                    }
+
+                    Object.assign(contentElement.style, {
+                        width: "150px",
+                        height: "150px",
+                        pointerEvents: "none",
+                        display: "block"
+                    });
 
                     // Create delete button
                     const deleteBtn = document.createElement("button");
                     deleteBtn.textContent = "Delete";
-                    deleteBtn.style.position = "absolute";
-                    deleteBtn.style.top = "-25px";
-                    deleteBtn.style.right = "0";
-                    deleteBtn.style.background = "red";
-                    deleteBtn.style.color = "white";
-                    deleteBtn.style.border = "none";
-                    deleteBtn.style.padding = "5px";
-                    deleteBtn.style.cursor = "pointer";
-                    deleteBtn.style.display = "none";
-                    deleteBtn.style.zIndex = "1001";
+                    Object.assign(deleteBtn.style, {
+                        position: "absolute",
+                        top: "-25px",
+                        right: "0",
+                        background: "red",
+                        color: "white",
+                        border: "none",
+                        padding: "5px",
+                        cursor: "pointer",
+                        display: "none",
+                        zIndex: "1001"
+                    });
+                    deleteBtn.addEventListener("click", () => container.remove());
 
                     // Create resize handle
                     const resizeHandle = document.createElement("div");
-                    resizeHandle.style.position = "absolute";
-                    resizeHandle.style.width = "10px";
-                    resizeHandle.style.height = "10px";
-                    resizeHandle.style.background = "blue";
-                    resizeHandle.style.bottom = "0";
-                    resizeHandle.style.right = "0";
-                    resizeHandle.style.cursor = "se-resize";
-                    resizeHandle.style.display = "none";
-                    resizeHandle.style.zIndex = "1001";
+                    Object.assign(resizeHandle.style, {
+                        position: "absolute",
+                        width: "15px",
+                        height: "15px",
+                        background: "blue",
+                        bottom: "-7px",
+                        right: "-7px",
+                        cursor: "se-resize",
+                        display: "none",
+                        zIndex: "1001"
+                    });
 
-                    // Add hover effects
+                    // Create rotate handle
+                    const rotateHandle = document.createElement("div");
+                    Object.assign(rotateHandle.style, {
+                        position: "absolute",
+                        width: "15px",
+                        height: "15px",
+                        background: "green",
+                        top: "-25px",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        cursor: "grab",
+                        display: "none",
+                        zIndex: "1001"
+                    });
+
+                    let hideControlsTimeout;
                     container.addEventListener("mouseenter", () => {
                         deleteBtn.style.display = "block";
                         resizeHandle.style.display = "block";
+                        rotateHandle.style.display = "block";
+                        clearTimeout(hideControlsTimeout);
                     });
 
                     container.addEventListener("mouseleave", () => {
-                        if (!isResizing) {
+                        hideControlsTimeout = setTimeout(() => {
                             deleteBtn.style.display = "none";
                             resizeHandle.style.display = "none";
-                        }
+                            rotateHandle.style.display = "none";
+                        }, 1500);
                     });
 
-                    // Make container draggable
+                    // Dragging
+                    let isDragging = false, startX, startY;
                     container.addEventListener("mousedown", function (e) {
-                        if (e.target === deleteBtn || e.target === resizeHandle) return;
-
-                        let isDragging = true;
-                        let currentX = e.clientX - parseInt(container.style.left);
-                        let currentY = e.clientY - parseInt(container.style.top);
-
-                        const moveHandler = function (e) {
+                        if ([deleteBtn, resizeHandle, rotateHandle].includes(e.target)) return;
+                        isDragging = true;
+                        startX = e.clientX - container.offsetLeft;
+                        startY = e.clientY - container.offsetTop;
+                        function moveHandler(e) {
                             if (isDragging) {
-                                container.style.left = (e.clientX - currentX) + "px";
-                                container.style.top = (e.clientY - currentY) + "px";
+                                container.style.left = `${e.clientX - startX}px`;
+                                container.style.top = `${e.clientY - startY}px`;
                             }
-                        };
-
-                        const upHandler = function () {
+                        }
+                        function upHandler() {
                             isDragging = false;
                             document.removeEventListener("mousemove", moveHandler);
                             document.removeEventListener("mouseup", upHandler);
-                        };
-
+                        }
                         document.addEventListener("mousemove", moveHandler);
                         document.addEventListener("mouseup", upHandler);
                     });
 
-                    // Add resize functionality
+                    // Resizing
                     let isResizing = false;
                     resizeHandle.addEventListener("mousedown", function (e) {
                         isResizing = true;
                         e.stopPropagation();
-
-                        const startX = e.clientX;
-                        const startY = e.clientY;
-                        const startWidth = img.offsetWidth;
-
-                        const moveHandler = function (e) {
+                        const startX = e.clientX, startY = e.clientY;
+                        const startWidth = contentElement.offsetWidth, startHeight = contentElement.offsetHeight;
+                        function resizeHandler(e) {
                             if (isResizing) {
                                 const newWidth = startWidth + (e.clientX - startX);
-                                if (newWidth > 50) { // Minimum width
-                                    img.style.width = newWidth + "px";
+                                const newHeight = startHeight + (e.clientY - startY);
+                                if (newWidth > 50 && newHeight > 50) {
+                                    contentElement.style.width = `${newWidth}px`;
+                                    contentElement.style.height = `${newHeight}px`;
                                 }
                             }
-                        };
-
-                        const upHandler = function () {
+                        }
+                        function stopResize() {
                             isResizing = false;
-                            if (!container.matches(':hover')) {
-                                deleteBtn.style.display = "none";
-                                resizeHandle.style.display = "none";
+                            document.removeEventListener("mousemove", resizeHandler);
+                            document.removeEventListener("mouseup", stopResize);
+                        }
+                        document.addEventListener("mousemove", resizeHandler);
+                        document.addEventListener("mouseup", stopResize);
+                    });
+
+                    // Rotation
+                    let isRotating = false;
+                    rotateHandle.addEventListener("mousedown", function (e) {
+                        isRotating = true;
+                        e.stopPropagation();
+                        const rect = container.getBoundingClientRect();
+                        const centerX = rect.left + rect.width / 2;
+                        const centerY = rect.top + rect.height / 2;
+                        function rotateHandler(e) {
+                            if (isRotating) {
+                                const deltaX = e.clientX - centerX;
+                                const deltaY = e.clientY - centerY;
+                                const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+                                container.style.transform = `rotate(${angle}deg)`;
                             }
-                            document.removeEventListener("mousemove", moveHandler);
-                            document.removeEventListener("mouseup", upHandler);
-                        };
-
-                        document.addEventListener("mousemove", moveHandler);
-                        document.addEventListener("mouseup", upHandler);
+                        }
+                        function stopRotate() {
+                            isRotating = false;
+                            document.removeEventListener("mousemove", rotateHandler);
+                            document.removeEventListener("mouseup", stopRotate);
+                        }
+                        document.addEventListener("mousemove", rotateHandler);
+                        document.addEventListener("mouseup", stopRotate);
                     });
 
-                    // Add delete functionality
-                    deleteBtn.addEventListener("click", () => {
-                        container.remove();
-                    });
-
-                    // Offset each new signature
-                    const existingSignatures = document.querySelectorAll('[id^="signature-"]');
-                    if (existingSignatures.length > 0) {
-                        container.style.top = (200 + existingSignatures.length * 20) + "px";
-                        container.style.left = (200 + existingSignatures.length * 20) + "px";
-                    }
-
-                    // Assemble and add to document
-                    container.appendChild(img);
+                    // Append elements
+                    container.appendChild(contentElement);
                     container.appendChild(deleteBtn);
                     container.appendChild(resizeHandle);
+                    container.appendChild(rotateHandle);
                     document.querySelector(".container").appendChild(container);
                 };
                 reader.readAsDataURL(file);
             }
         });
+
 
 
         // Disable right click
@@ -1447,6 +1573,48 @@ function selectPageSizeAndOrientation() {
                 alert('This action is disabled!');
             }
         });
+
+        // Make the summary table draggable
+        const summaryTable = document.getElementById("summaryTable");
+        const summaryHeader = document.getElementById("summaryHeader");
+        let isSummaryDragging = false, summaryOffsetX, summaryOffsetY;
+
+        summaryHeader.addEventListener("mousedown", (event) => {
+            isSummaryDragging = true;
+            summaryTable.style.cursor = "grabbing";
+            summaryOffsetX = event.clientX - summaryTable.getBoundingClientRect().left;
+            summaryOffsetY = event.clientY - summaryTable.getBoundingClientRect().top;
+            event.stopPropagation(); // Prevent canvas panning
+        });
+
+        document.addEventListener("mousemove", (event) => {
+            if (isSummaryDragging) {
+                summaryTable.style.left = event.clientX - summaryOffsetX + "px";
+                summaryTable.style.top = event.clientY - summaryOffsetY + "px";
+            }
+        });
+
+        document.addEventListener("mouseup", () => {
+            isSummaryDragging = false;
+            summaryTable.style.cursor = "grab";
+        });
+
+
+        document.querySelectorAll("#editableSummaryTable td").forEach(cell => {
+            cell.addEventListener("input", function () {
+                const row = this.parentElement; // Get parent row
+                const cells = row.querySelectorAll("td");
+
+                // Check if both columns are empty
+                if ([...cells].every(td => td.textContent.trim() === "")) {
+                    row.style.display = "none"; // Hide row
+                    // row.remove(); // If you prefer to delete the row instead
+                } else {
+                    row.style.display = "table-row"; // Show row if content is added back
+                }
+            });
+        });
+
     </script>
 
 
