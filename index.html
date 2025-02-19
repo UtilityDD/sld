@@ -47,6 +47,8 @@
             cursor: pointer;
             display: none;
         }
+
+        
     </style>
 </head>
 
@@ -1630,6 +1632,7 @@ let roadSegments = [];
 let deleteTimeout = null;
 
 const drawRoadBtn = document.getElementById("drawRoadBtn");
+const roadLayer = container.insert("g", ":first-child").attr("id", "roadLayer");
 
 
 const opacitySlider = document.createElement("input");
@@ -1637,7 +1640,8 @@ opacitySlider.type = "range";
 opacitySlider.min = 0.1;
 opacitySlider.max = 1;
 opacitySlider.step = 0.1;
-opacitySlider.value = 0.2; // Default transparency
+opacitySlider.style.zIndex = "1000";  // <== Add this line
+opacitySlider.value = 1.0; // Default transparency
 opacitySlider.style.position = "absolute";
 opacitySlider.style.top = "23px";
 opacitySlider.style.left = "620px";
@@ -1685,6 +1689,7 @@ colorPicker.type = "color";
 colorPicker.value = roadColor;
 colorPicker.style.position = "absolute";
 colorPicker.style.top = "23px";
+colorPicker.style.zIndex = "1000";  // <== Add this line
 colorPicker.style.width = "33px";
 colorPicker.style.height = "22px";
 colorPicker.style.left = "545px";
@@ -1721,18 +1726,17 @@ svg.on("click", (event) => {
     if (roadSegments.length > 0) {
         const prevPoint = roadSegments[roadSegments.length - 1];
 
-        const line = container.append("line")
-            .attr("x1", prevPoint.x)
-            .attr("y1", prevPoint.y)
-            .attr("x2", x)
-            .attr("y2", y)
-            .attr("stroke", roadColor)
-            .attr("stroke-width", roadWidth)
-            .attr("stroke-opacity", () => opacitySlider.value) // Use slider value for transparency
-
-            .attr("stroke-linecap", "round")
-            .attr("stroke-linejoin", "round")
-            .attr("class", "road-line")
+        const line = roadLayer.append("line") // Append to roadLayer, not container
+    .attr("x1", prevPoint.x)
+    .attr("y1", prevPoint.y)
+    .attr("x2", x)
+    .attr("y2", y)
+    .attr("stroke", roadColor)
+    .attr("stroke-width", roadWidth)
+    .attr("stroke-opacity", opacitySlider.value)
+    .attr("stroke-linecap", "round")
+    .attr("stroke-linejoin", "round")
+    .attr("class", "road-line")
             .on("mouseover", function (event) {
                 showDeleteButton(this, event);
             })
