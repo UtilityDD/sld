@@ -297,6 +297,50 @@
         });
 
 
+let tooltip = document.createElement("div");
+tooltip.textContent = "Click to insert";
+tooltip.style.position = "absolute";
+tooltip.style.display = "none";
+tooltip.style.background = "yellow";
+tooltip.style.color = "black";
+tooltip.style.padding = "5px";
+tooltip.style.borderRadius = "5px";
+tooltip.style.fontSize = "12px";
+tooltip.style.pointerEvents = "none"; // Prevent interaction
+document.body.appendChild(tooltip);
+
+document.querySelectorAll(".symbolBtn").forEach(button => {
+    button.addEventListener("click", (event) => {
+        selectedSymbol = event.target.dataset.symbol;
+
+        // Show tooltip near the cursor
+        tooltip.style.display = "block";
+        document.addEventListener("mousemove", moveTooltip);
+    });
+});
+
+// Function to move tooltip with cursor
+function moveTooltip(event) {
+    tooltip.style.left = `${event.pageX + 10}px`;
+    tooltip.style.top = `${event.pageY + 10}px`;
+}
+
+svg.on("click.symbol", (event) => {
+    if (!selectedSymbol) return;
+
+    const transform = d3.zoomTransform(svg.node());
+    const [x, y] = transform.invert(d3.pointer(event));
+
+    console.log("Placing symbol at:", x, y); // Debugging log
+
+    nodes.push({ id: nodes.length + 1, x, y, text: selectedSymbol, color: "none" });
+    drawDiagram();
+
+    // Reset selected symbol after placement
+    selectedSymbol = null;
+    tooltip.style.display = "none";
+    document.removeEventListener("mousemove", moveTooltip);
+});
 
 
 
@@ -873,7 +917,6 @@ function hideDeleteButton() {
                         .style("font-size", "13px"); // Set font style
 
 
-
                     // Get the bounding box of the text to size the rectangle
                     const bbox = textElement.node().getBBox();
 
@@ -884,9 +927,6 @@ function hideDeleteButton() {
                         .attr("width", bbox.width + 4) // Set width based on the text size
                         .attr("height", bbox.height + 4) // Set height based on the text size
                         .attr("fill", "white"); // Set background color without border
-
-
-
 
 
                     // Handle click event to edit the label
@@ -916,13 +956,10 @@ function hideDeleteButton() {
                     });
                 });
 
-
-
-
-
             nodeElements.append("text")
                 .attr("text-anchor", "middle")
-                .attr("dy", 5)
+                .attr("dy", "0.35em")
+                .attr("font-size", d => d.text.match(/[\uD800-\uDFFF]/) ? "30px" : "16px") // Bigger size for symbols
                 .text(d => d.text)
                 .attr("fill", "white")
                 .on("click", (event, d) => {
@@ -941,10 +978,6 @@ function hideDeleteButton() {
                     });
                 });
         }
-
-
-
-
 
         function positionButtons(x, y, node) {
             if (node.text.match(/[\uD800-\uDFFF]/)) {
