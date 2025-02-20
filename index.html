@@ -250,16 +250,42 @@
         });
 
         svg.on("click", (event) => {
-            if (!selectedSymbol) return;
+    if (!drawingRoad) return;
 
-            const transform = d3.zoomTransform(svg.node()); // Get current zoom & pan transform
-            const [mouseX, mouseY] = transform.invert(d3.pointer(event)); // Convert to transformed coordinates
+    tooltip.style.display = "none"; // Hide "Click to Start" after first click
+    document.removeEventListener("mousemove", moveTooltip); 
 
-            const newSymbol = { id: nodes.length + 1, x: mouseX, y: mouseY, text: selectedSymbol, color: "white" };
-            nodes.push(newSymbol);
-            selectedSymbol = null;
-            drawDiagram(); // Redraw with the new symbol
-        });
+    const transform = d3.zoomTransform(svg.node());
+    const [x, y] = transform.invert(d3.pointer(event));
+
+    if (roadSegments.length > 0) {
+        const prevPoint = roadSegments[roadSegments.length - 1];
+
+        const line = roadLayer.append("line")
+            .attr("x1", prevPoint.x)
+            .attr("y1", prevPoint.y)
+            .attr("x2", x)
+            .attr("y2", y)
+            .attr("stroke", roadColor)
+            .attr("stroke-width", roadWidth)
+            .attr("stroke-opacity", opacitySlider.value)
+            .attr("stroke-linecap", "round")
+            .attr("stroke-linejoin", "round")
+            .attr("class", "road-line")
+            .on("mouseover", function (event) {
+                showDeleteButton(this, event);
+            })
+            .on("mouseout", () => {
+                hideDeleteButton();
+            });
+
+        roadSegments.push({ x, y, line });
+        updateRoadTransparency();
+    } else {
+        roadSegments.push({ x, y });
+    }
+});
+
 
 
         let selectedSymbol = null;
@@ -272,9 +298,210 @@
 
 
 
+
+
         function drawDiagram() {
             container.selectAll("*").rem
-            container.selectAll("*").remove(); // Clear previous elements
+            container.selectAll(".node, .line, .link-label").remove(); // Remove only nodes, lines, and labels
+
+
+
+            
+let drawingRoad = false;
+let roadColor = "#d2b746";
+let roadWidth = 23;
+let roadSegments = [];
+let deleteTimeout = null;
+
+const drawRoadBtn = document.getElementById("drawRoadBtn");
+const roadLayer = container.insert("g", ":first-child").attr("id", "roadLayer");
+
+
+const opacitySlider = document.createElement("input");
+opacitySlider.type = "range";
+opacitySlider.min = 0.1;
+opacitySlider.max = 1;
+opacitySlider.step = 0.1;
+opacitySlider.style.zIndex = "1000";  // <== Add this line
+opacitySlider.value = 1; // Default transparency
+opacitySlider.style.position = "absolute";
+opacitySlider.style.top = "23px";
+opacitySlider.style.left = "620px";
+document.body.appendChild(opacitySlider);
+
+
+// Create "Click to Start" tooltip
+const tooltip = document.createElement("div");
+tooltip.textContent = "Click to draw";
+tooltip.style.position = "absolute";
+tooltip.style.display = "none";
+tooltip.style.background = "yellow";
+tooltip.style.color = "black";
+tooltip.style.padding = "5px";
+tooltip.style.borderRadius = "5px";
+tooltip.style.fontSize = "12px";
+tooltip.style.pointerEvents = "none"; // Prevent interaction
+document.body.appendChild(tooltip);
+
+
+
+
+drawRoadBtn.addEventListener("click", () => {
+    drawingRoad = !drawingRoad;
+    roadSegments = [];
+    drawRoadBtn.style.background = drawingRoad ? "red" : "";
+    drawRoadBtn.style.color = drawingRoad ? "white" : "black";
+    document.body.style.cursor = drawingRoad ? "crosshair" : "default"; 
+    drawRoadBtn.textContent = drawingRoad ? "Stop Road" : "Draw Road";
+
+    if (drawingRoad) {
+        tooltip.style.display = "block";
+        document.addEventListener("mousemove", moveTooltip);
+    } else {
+        tooltip.style.display = "none";
+        document.removeEventListener("mousemove", moveTooltip);
+    }
+});
+
+// Function to move tooltip with cursor
+function moveTooltip(event) {
+    tooltip.style.left = `${event.pageX + 10}px`;
+    tooltip.style.top = `${event.pageY + 10}px`;
+}
+
+const colorPicker = document.createElement("input");
+colorPicker.type = "color";
+colorPicker.value = roadColor;
+colorPicker.style.position = "absolute";
+colorPicker.style.top = "23px";
+colorPicker.style.zIndex = "1000";  // <== Add this line
+colorPicker.style.width = "33px";
+colorPicker.style.height = "22px";
+colorPicker.style.left = "545px";
+document.body.appendChild(colorPicker);
+
+const widthInput = document.createElement("input");
+widthInput.type = "number";
+widthInput.min = 1;
+widthInput.max = 40;
+widthInput.value = roadWidth;
+widthInput.style.position = "absolute";
+widthInput.style.top = "23px";
+widthInput.style.width = "33px";
+widthInput.style.left = "580px";
+document.body.appendChild(widthInput);
+
+colorPicker.addEventListener("input", () => {
+    roadColor = colorPicker.value;
+});
+
+widthInput.addEventListener("input", () => {
+    roadWidth = parseInt(widthInput.value);
+});
+
+svg.on("click", (event) => {
+    if (!drawingRoad) return;
+
+    tooltip.style.display = "none"; // Hide "Click to Start" after first click
+    document.removeEventListener("mousemove", moveTooltip);
+
+    const transform = d3.zoomTransform(svg.node());
+    const [x, y] = transform.invert(d3.pointer(event));
+
+    if (roadSegments.length > 0) {
+        const prevPoint = roadSegments[roadSegments.length - 1];
+
+        const line = roadLayer.append("line") // Append to roadLayer, not container
+    .attr("x1", prevPoint.x)
+    .attr("y1", prevPoint.y)
+    .attr("x2", x)
+    .attr("y2", y)
+    .attr("stroke", roadColor)
+    .attr("stroke-width", roadWidth)
+    .attr("stroke-opacity", opacitySlider.value)
+    .attr("stroke-linecap", "round")
+    .attr("stroke-linejoin", "round")
+    .attr("class", "road-line")
+            .on("mouseover", function (event) {
+                showDeleteButton(this, event);
+            })
+            .on("mouseout", () => {
+                hideDeleteButton();
+            });
+
+        roadSegments.push({ x, y, line });
+        updateRoadTransparency(); // Check and update transparency for overlapping segments
+    } else {
+        roadSegments.push({ x, y });
+    }
+});
+
+ container.call(
+    d3.drag()
+        .on("start", () => { document.body.style.cursor = "move"; })
+        .on("drag", (event) => { moveRoad(event.dx, event.dy); })
+        .on("end", () => { document.body.style.cursor = "default"; })
+);
+
+
+// Function to move entire road while keeping segments connected
+function moveRoad(dx, dy) {
+    roadSegments.forEach(segment => {
+        segment.x += dx;
+        segment.y += dy;
+    });
+
+
+    opacitySlider.addEventListener("input", () => {
+    d3.selectAll(".road-line").attr("stroke-opacity", opacitySlider.value);
+});
+
+    roadSegments.forEach((segment, index) => {
+        if (index > 0) {
+            segment.line
+                .attr("x1", roadSegments[index - 1].x)
+                .attr("y1", roadSegments[index - 1].y)
+                .attr("x2", segment.x)
+                .attr("y2", segment.y);
+        }
+    });
+}
+
+
+
+
+// Delete button handling
+const deleteButton = document.createElement("button");
+deleteButton.textContent = "Delete";
+deleteButton.style.position = "absolute";
+deleteButton.style.display = "none";
+deleteButton.style.background = "red";
+deleteButton.style.color = "white";
+deleteButton.style.border = "none";
+deleteButton.style.padding = "5px";
+deleteButton.style.cursor = "pointer";
+document.body.appendChild(deleteButton);
+
+function showDeleteButton(line, event) {
+    deleteButton.style.left = `${event.pageX + 10}px`;
+    deleteButton.style.top = `${event.pageY}px`;
+    deleteButton.style.display = "block";
+
+    // Clear previous timeout if user hovers again
+    if (deleteTimeout) clearTimeout(deleteTimeout);
+
+    deleteButton.onclick = () => {
+        d3.select(line).remove();
+        deleteButton.style.display = "none";
+    };
+}
+
+function hideDeleteButton() {
+    deleteTimeout = setTimeout(() => {
+        deleteButton.style.display = "none";
+    }, 1500); // Hide after 1.5 seconds
+}
+
 
             // Draw links
             // Draw links with toggling line type on click
@@ -576,6 +803,8 @@
                     });
                 });
 
+                tooltip.style.display = "none"; // Hide "Click to Start" after first click
+                document.removeEventListener("mousemove", moveTooltip);
 
             // Draw nodes
             const nodeElements = container.selectAll(".node").data(nodes).enter().append("g")
@@ -656,6 +885,10 @@
                         .attr("height", bbox.height + 4) // Set height based on the text size
                         .attr("fill", "white"); // Set background color without border
 
+
+
+
+
                     // Handle click event to edit the label
                     textElement.on("click", (event, d) => {
                         const input = document.createElement("input");
@@ -708,6 +941,10 @@
                     });
                 });
         }
+
+
+
+
 
         function positionButtons(x, y, node) {
             if (node.text.match(/[\uD800-\uDFFF]/)) {
@@ -815,12 +1052,14 @@
             const addNodeBtn = document.getElementById("addNodeBtn");
             const deleteNodeBtn = document.getElementById("deleteNodeBtn");
             const signatureInput = document.getElementById("signatureInput");
+            const drawRoadBtn = document.getElementById("drawRoadBtn");
+
 
             // Store visibility states
             const elementsToHide = [
                 menuBtn, addTextBoxBtn, addNetworkBtn, addSignatureBtn,
                 paperSizeLabel, paperSizeSelect, orientationLabel, orientationSelect,
-                resetBtn, savePngBtn, savePdfBtn, menuList, addNodeBtn, deleteNodeBtn, signatureInput
+                resetBtn, savePngBtn, savePdfBtn, menuList, addNodeBtn, deleteNodeBtn, signatureInput,drawRoadBtn
             ];
 
             // Save original display states
@@ -1625,197 +1864,6 @@
 
 
 
-let drawingRoad = false;
-let roadColor = "#d2b746";
-let roadWidth = 23;
-let roadSegments = [];
-let deleteTimeout = null;
-
-const drawRoadBtn = document.getElementById("drawRoadBtn");
-const roadLayer = container.insert("g", ":first-child").attr("id", "roadLayer");
-
-
-const opacitySlider = document.createElement("input");
-opacitySlider.type = "range";
-opacitySlider.min = 0.1;
-opacitySlider.max = 1;
-opacitySlider.step = 0.1;
-opacitySlider.style.zIndex = "1000";  // <== Add this line
-opacitySlider.value = 1.0; // Default transparency
-opacitySlider.style.position = "absolute";
-opacitySlider.style.top = "23px";
-opacitySlider.style.left = "620px";
-document.body.appendChild(opacitySlider);
-
-
-// Create "Click to Start" tooltip
-const tooltip = document.createElement("div");
-tooltip.textContent = "Click to start";
-tooltip.style.position = "absolute";
-tooltip.style.display = "none";
-tooltip.style.background = "yellow";
-tooltip.style.color = "black";
-tooltip.style.padding = "5px";
-tooltip.style.borderRadius = "5px";
-tooltip.style.fontSize = "12px";
-tooltip.style.pointerEvents = "none"; // Prevent interaction
-document.body.appendChild(tooltip);
-
-drawRoadBtn.addEventListener("click", () => {
-    drawingRoad = !drawingRoad;
-    roadSegments = [];
-    drawRoadBtn.style.background = drawingRoad ? "red" : "";
-    drawRoadBtn.style.color = drawingRoad ? "white" : "black";
-    document.body.style.cursor = drawingRoad ? "crosshair" : "default"; 
-    drawRoadBtn.textContent = drawingRoad ? "Stop Road" : "Draw Road";
-
-    if (drawingRoad) {
-        tooltip.style.display = "block";
-        document.addEventListener("mousemove", moveTooltip);
-    } else {
-        tooltip.style.display = "none";
-        document.removeEventListener("mousemove", moveTooltip);
-    }
-});
-
-// Function to move tooltip with cursor
-function moveTooltip(event) {
-    tooltip.style.left = `${event.pageX + 10}px`;
-    tooltip.style.top = `${event.pageY + 10}px`;
-}
-
-const colorPicker = document.createElement("input");
-colorPicker.type = "color";
-colorPicker.value = roadColor;
-colorPicker.style.position = "absolute";
-colorPicker.style.top = "23px";
-colorPicker.style.zIndex = "1000";  // <== Add this line
-colorPicker.style.width = "33px";
-colorPicker.style.height = "22px";
-colorPicker.style.left = "545px";
-document.body.appendChild(colorPicker);
-
-const widthInput = document.createElement("input");
-widthInput.type = "number";
-widthInput.min = 1;
-widthInput.max = 40;
-widthInput.value = roadWidth;
-widthInput.style.position = "absolute";
-widthInput.style.top = "23px";
-widthInput.style.width = "33px";
-widthInput.style.left = "580px";
-document.body.appendChild(widthInput);
-
-colorPicker.addEventListener("input", () => {
-    roadColor = colorPicker.value;
-});
-
-widthInput.addEventListener("input", () => {
-    roadWidth = parseInt(widthInput.value);
-});
-
-svg.on("click", (event) => {
-    if (!drawingRoad) return;
-
-    tooltip.style.display = "none"; // Hide "Click to Start" after first click
-    document.removeEventListener("mousemove", moveTooltip);
-
-    const transform = d3.zoomTransform(svg.node());
-    const [x, y] = transform.invert(d3.pointer(event));
-
-    if (roadSegments.length > 0) {
-        const prevPoint = roadSegments[roadSegments.length - 1];
-
-        const line = roadLayer.append("line") // Append to roadLayer, not container
-    .attr("x1", prevPoint.x)
-    .attr("y1", prevPoint.y)
-    .attr("x2", x)
-    .attr("y2", y)
-    .attr("stroke", roadColor)
-    .attr("stroke-width", roadWidth)
-    .attr("stroke-opacity", opacitySlider.value)
-    .attr("stroke-linecap", "round")
-    .attr("stroke-linejoin", "round")
-    .attr("class", "road-line")
-            .on("mouseover", function (event) {
-                showDeleteButton(this, event);
-            })
-            .on("mouseout", () => {
-                hideDeleteButton();
-            });
-
-        roadSegments.push({ x, y, line });
-        updateRoadTransparency(); // Check and update transparency for overlapping segments
-    } else {
-        roadSegments.push({ x, y });
-    }
-});
-
- container.call(
-    d3.drag()
-        .on("start", () => { document.body.style.cursor = "move"; })
-        .on("drag", (event) => { moveRoad(event.dx, event.dy); })
-        .on("end", () => { document.body.style.cursor = "default"; })
-);
-
-
-// Function to move entire road while keeping segments connected
-function moveRoad(dx, dy) {
-    roadSegments.forEach(segment => {
-        segment.x += dx;
-        segment.y += dy;
-    });
-
-
-    opacitySlider.addEventListener("input", () => {
-    d3.selectAll(".road-line").attr("stroke-opacity", opacitySlider.value);
-});
-
-    roadSegments.forEach((segment, index) => {
-        if (index > 0) {
-            segment.line
-                .attr("x1", roadSegments[index - 1].x)
-                .attr("y1", roadSegments[index - 1].y)
-                .attr("x2", segment.x)
-                .attr("y2", segment.y);
-        }
-    });
-}
-
-
-
-
-// Delete button handling
-const deleteButton = document.createElement("button");
-deleteButton.textContent = "Delete";
-deleteButton.style.position = "absolute";
-deleteButton.style.display = "none";
-deleteButton.style.background = "red";
-deleteButton.style.color = "white";
-deleteButton.style.border = "none";
-deleteButton.style.padding = "5px";
-deleteButton.style.cursor = "pointer";
-document.body.appendChild(deleteButton);
-
-function showDeleteButton(line, event) {
-    deleteButton.style.left = `${event.pageX + 10}px`;
-    deleteButton.style.top = `${event.pageY}px`;
-    deleteButton.style.display = "block";
-
-    // Clear previous timeout if user hovers again
-    if (deleteTimeout) clearTimeout(deleteTimeout);
-
-    deleteButton.onclick = () => {
-        d3.select(line).remove();
-        deleteButton.style.display = "none";
-    };
-}
-
-function hideDeleteButton() {
-    deleteTimeout = setTimeout(() => {
-        deleteButton.style.display = "none";
-    }, 1500); // Hide after 1.5 seconds
-}
 
 
     </script>
