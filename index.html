@@ -17,10 +17,15 @@
             overflow: hidden;
         }
 
+        body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* 🔥 Prevent page scrolling */
+}
         .container {
             width: 100vw;
             height: 100vh;
-            overflow: auto;
+            overflow: hidden !important; 
             position: relative;
         }
 
@@ -56,14 +61,14 @@
 
     <div class="container">
 
-        <button id="menuBtn" style="position: absolute; top: 15px; left: 30px; z-index: 1000;">Symbol</button>
-        <button id="addTextBox" style="position: absolute; top: 15px; left: 100px; z-index: 1000;">Add Text Box</button>
-        <button id="addNetworkBtn" style="position: absolute; top: 15px; left: 200px; z-index: 1000;">Add New
+        <button id="menuBtn" style="position: fixed; top: 15px; left: 30px; z-index: 1000;">Symbol</button>
+        <button id="addTextBox" style="position: fixed; top: 15px; left: 100px; z-index: 1000;">Add Text Box</button>
+        <button id="addNetworkBtn" style="position: fixed; top: 15px; left: 200px; z-index: 1000;">Add New
             Network</button>
-        <button id="addSignatureBtn" style="position: absolute; top: 15px; left: 330px; z-index: 1000;">Add
+        <button id="addSignatureBtn" style="position: fixed; top: 15px; left: 330px; z-index: 1000;">Add
             Signature</button>
         <input type="file" id="signatureInput" accept="image/png" style="display: none;">
-        <button id="drawRoadBtn" style="position: absolute; top: 15px; left: 450px; z-index: 1000;">Draw Road</button>
+        <button id="drawRoadBtn" style="position: fixed; top: 15px; left: 450px; z-index: 1000;">Draw Road</button>
 
 
   
@@ -83,6 +88,9 @@
             <button class="symbolBtn" data-symbol="🏡">🏡</button>
             <button class="symbolBtn" data-symbol="🛖">🛖</button>
 
+
+
+
         </div>
         <svg id="diagram" width="2000" height="2000"></svg>
     </div>
@@ -92,12 +100,12 @@
 
     <!-- Add this div for the Summary Table -->
     <div id="summaryTable"
-        style="position: absolute; top: 250px; right: 100px; background: none; padding: 10px; cursor: grab; display: inline-block; z-index: 1;">
+        style="position: absolute; bottom: 60px; right: 60px; background: none; padding: 10px; cursor: grab; display: inline-block; z-index: 1;">
         <h3 id="summaryHeader" style="margin: 5; cursor: grab;">Summary</h3>
         <table id="editableSummaryTable" style="border-collapse: collapse; text-align: left; width: auto;">
             <tr style="border-bottom: 1px solid gray;">
-                <th style="min-width: 100px;">Item⠀⠀</th>
-                <th style="min-width: 150px;">Quantity</th>
+                <th style="min-width: 200px;">Item⠀⠀</th>
+                <th style="min-width: 60px;">Quantity</th>
             </tr>
             <!-- 15 editable rows -->
             <tr style="border-bottom: 1px solid gray;">
@@ -140,33 +148,14 @@
                 <td contenteditable="true">Item 10</td>
                 <td contenteditable="true">Detail 10</td>
             </tr>
-            <tr style="border-bottom: 1px solid gray;">
-                <td contenteditable="true">Item 11</td>
-                <td contenteditable="true">Detail 11</td>
-            </tr>
-            <tr style="border-bottom: 1px solid gray;">
-                <td contenteditable="true">Item 12</td>
-                <td contenteditable="true">Detail 12</td>
-            </tr>
-            <tr style="border-bottom: 1px solid gray;">
-                <td contenteditable="true">Item 13</td>
-                <td contenteditable="true">Detail 13</td>
-            </tr>
-            <tr style="border-bottom: 1px solid gray;">
-                <td contenteditable="true">Item 14</td>
-                <td contenteditable="true">Detail 14</td>
-            </tr>
-            <tr style="border-bottom: 1px solid gray;">
-                <td contenteditable="true">Item 15</td>
-                <td contenteditable="true">Detail 15</td>
-            </tr>
+
         </table>
     </div>
 
 
     <!-- Save Buttons -->
     <!-- Dropdowns for Paper Size and Orientation -->
-    <label for="paperSize">Paper Size:</label>
+   <!--  <label for="paperSize">Paper Size:</label>
     <select id="paperSize">
         <option value="A4">A4</option>
         <option value="A3">A3</option>
@@ -180,7 +169,8 @@
     <select id="orientation">
         <option value="portrait">Portrait</option>
         <option value="landscape">Landscape</option>
-    </select>
+    </select>  -->
+
     <button id="resetBtn" style="position: absolute; top: 15px; right: 240px; z-index: 1000;">Reset</button>
     <button id="savePngBtn" style="position: absolute; top: 15px; right: 135px; z-index: 1000;">Save as PNG</button>
     <button id="savePdfBtn" style="position: absolute; top: 15px; right: 30px; z-index: 1000;">Save as PDF</button>
@@ -216,7 +206,7 @@
 
         // Enable zoom and pan
         const zoom = d3.zoom()
-            .scaleExtent([0.5, 2]) // Min and max zoom levels
+            .scaleExtent([0.5, 3]) // Min and max zoom levels
             .on("zoom", (event) => {
                 container.attr("transform", event.transform);
             });
@@ -367,7 +357,7 @@ opacitySlider.step = 0.1;
 opacitySlider.style.zIndex = "1000";  // <== Add this line
 opacitySlider.value = 1; // Default transparency
 opacitySlider.style.position = "absolute";
-opacitySlider.style.top = "23px";
+opacitySlider.style.top = "15px";
 opacitySlider.style.left = "620px";
 document.body.appendChild(opacitySlider);
 
@@ -415,7 +405,7 @@ const colorPicker = document.createElement("input");
 colorPicker.type = "color";
 colorPicker.value = roadColor;
 colorPicker.style.position = "absolute";
-colorPicker.style.top = "23px";
+colorPicker.style.top = "15px";
 colorPicker.style.zIndex = "1000";  // <== Add this line
 colorPicker.style.width = "33px";
 colorPicker.style.height = "22px";
@@ -428,7 +418,7 @@ widthInput.min = 1;
 widthInput.max = 40;
 widthInput.value = roadWidth;
 widthInput.style.position = "absolute";
-widthInput.style.top = "23px";
+widthInput.style.top = "15px";
 widthInput.style.width = "33px";
 widthInput.style.left = "580px";
 document.body.appendChild(widthInput);
@@ -957,9 +947,11 @@ function hideDeleteButton() {
             nodeElements.append("text")
                 .attr("text-anchor", "middle")
                 .attr("dy", "0.35em")
-                .attr("font-size", d => d.text.match(/[\uD800-\uDFFF]/) ? "30px" : "16px") // Bigger size for symbols
+                .attr("font-size", d => isSymbol(d.text) ? "30px" : "16px") // Bigger size for symbols
                 .text(d => d.text)
                 .attr("fill", "white")
+
+
                 .on("click", (event, d) => {
                     const input = document.createElement("input");
                     input.type = "text";
@@ -975,6 +967,18 @@ function hideDeleteButton() {
                         drawDiagram();
                     });
                 });
+
+                // Function to check if the text is a symbol (emoji or special character)
+function isSymbol(text) {
+    if (!text) return false; // Handle empty text cases
+    const codePoint = text.codePointAt(0); // Get the Unicode value of the first character
+    return (
+        (codePoint >= 0x1F300 && codePoint <= 0x1F6FF) || // Emojis (e.g., 🌳, 🚀, ⚡)
+        (codePoint >= 0x2700 && codePoint <= 0x27BF) ||  // Dingbats (e.g., ❌, ➕, ➖)
+      /*  (codePoint >= 0x2600 && codePoint <= 0x26FF) ||  // Misc Symbols (e.g., ☀, ☎)*/
+        (codePoint >= 0x2B50 && codePoint <= 0x2BFF)     // Additional symbols (e.g., ⭐)
+    );
+}
         }
 
         function positionButtons(x, y, node) {
@@ -1001,14 +1005,31 @@ function hideDeleteButton() {
 
 
         addNodeBtn.addEventListener("click", () => {
-            if (selectedNode) {
-                const newNode = { id: nodes.length + 1, x: selectedNode.x + 100, y: selectedNode.y, text: "8m", color: "gray" };
-                nodes.push(newNode);
-                links.push({ source: selectedNode.id, target: newNode.id, color: "black" });
-                drawDiagram();
-                hideButtons();
-            }
-        });
+    if (selectedNode) {
+        // Find the previous node in the connected line
+        let prevNode = links.find(link => link.target === selectedNode.id);
+        let inheritedText = prevNode ? nodes.find(n => n.id === prevNode.source)?.text : selectedNode.text;
+
+        // Determine the new node's label
+        let newNodeText = (selectedNode.text === "DTR") ? "8m" :
+                          (selectedNode.text === "8m" || selectedNode.text === "9m"|| selectedNode.text === "9m") ? selectedNode.text :
+                          inheritedText || selectedNode.text; // Fallback to selectedNode.text if no previous node
+
+        const newNode = { 
+            id: nodes.length + 1, 
+            x: selectedNode.x + 100, 
+            y: selectedNode.y, 
+            text: newNodeText,  // Apply the determined text
+            color: "gray" 
+        };
+
+        nodes.push(newNode);
+        links.push({ source: selectedNode.id, target: newNode.id, color: "black" });
+        drawDiagram();
+        hideButtons();
+    }
+});
+
 
         deleteNodeBtn.addEventListener("click", () => {
             if (selectedNode) {
@@ -1166,13 +1187,25 @@ function hideDeleteButton() {
         document.getElementById("savePngBtn").outerHTML = document.getElementById("savePngBtn").outerHTML;
 
         // Now add new event listeners
-        document.getElementById("savePdfBtn").addEventListener("click", function (event) {
+   /*     document.getElementById("savePdfBtn").addEventListener("click", function (event) {
             event.preventDefault(); // Prevent default behavior
             event.stopPropagation(); // Stop propagation to prevent bubbling
 
             const { width, height } = selectPageSizeAndOrientation();
             saveAsImage("pdf", width, height);
         });
+*/
+
+savePdfBtn.outerHTML = savePdfBtn.outerHTML;
+
+// Re-select button and add a fresh event listener
+document.getElementById("savePdfBtn").addEventListener("click", function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const { width, height } = selectPageSizeAndOrientation();
+    saveAsImage("pdf", width, height);
+});
 
         document.getElementById("savePngBtn").addEventListener("click", function (event) {
             event.preventDefault(); // Prevent default behavior
@@ -1183,39 +1216,13 @@ function hideDeleteButton() {
         });
 
         // Modify selectPageSizeAndOrientation to always return landscape
-        function selectPageSizeAndOrientation() {
-            const paperSize = document.getElementById("paperSize").value;
-            let width, height;
-
-            switch (paperSize) {
-                case "A4":
-                    width = 297;
-                    height = 210;
-                    break;
-                case "A3":
-                    width = 420;
-                    height = 297;
-                    break;
-                case "Letter":
-                    width = 279.4;
-                    height = 215.9;
-                    break;
-                default:
-                    width = 297;
-                    height = 210; // Default to A4
-            }
-
-            // Always return landscape dimensions (width > height)
-            if (width < height) {
-                [width, height] = [height, width];
-            }
-
-            return {
-                width,
-                height,
-                orientation: "landscape"
-            };
-        }
+function selectPageSizeAndOrientation() {
+    return {
+        width: 297, // Default to A4 Landscape (Width x Height in mm)
+        height: 210,
+        orientation: "landscape"
+    };
+}
 
 
         document.getElementById("addTextBox").addEventListener("click", () => {
@@ -1228,7 +1235,7 @@ function hideDeleteButton() {
                 position: "absolute",
                 top: `${Math.random() * 400 + 50}px`, // Random position to prevent overlap
                 left: `${Math.random() * 400 + 50}px`,
-                background: "none",
+                background: "none",     
                 padding: "5px",
                 border: "1px solid transparent", // Initially hidden
                 cursor: "move",
@@ -1552,7 +1559,7 @@ function hideDeleteButton() {
     <!-- Your existing content -->
 
     <div id="legendTable"
-        style="position: absolute; top: 250px; left: 150px; background: none; padding: 10px; cursor: grab; display: inline-block; z-index: 1;">
+        style="position: absolute; bottom: 60px; left: 50px; background: none; padding: 10px; cursor: grab; display: inline-block; z-index: 1;">
         <h3 id="legendHeader" style="margin: 5; cursor: grab;">Legend</h3>
         <table style="border-collapse: collapse; text-align: left; width: auto;">
             <tr style="border-bottom: 1px solid gray;">
