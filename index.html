@@ -414,6 +414,8 @@
                     document.addEventListener("mousemove", moveTooltip);
                 } else {
                     tooltip.style.display = "none";
+                    tooltip.style.visibility = "hidden";  // ✅ Ensures complete hiding
+                    tooltip.style.opacity = "0";  // ✅ Extra safety measure
                     document.removeEventListener("mousemove", moveTooltip);
                 }
             });
