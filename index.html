@@ -55,10 +55,32 @@
             cursor: pointer;
             display: none;
         }
+
+        .delete-table-btn {
+    position: absolute;
+    top: 25px;
+    right: 150px;
+    background: rgba(255, 0, 0, 0);
+    color: white;
+    border: none;
+    padding: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    display: none;
+    z-index: 1000;
+    border-radius: 50%;
+}
+
+#legendTable:hover .delete-table-btn,
+#summaryTable:hover .delete-table-btn {
+    display: block;
+}
+
     </style>
 </head>
 
 <body>
+    
 
     <div class="container">
 
@@ -95,8 +117,7 @@
             <button class="symbolBtn" data-symbol="🚫">🚫</utton>
             <button class="symbolBtn" data-symbol="👷">👷</button>
         </div>
-
-                <div id="editableTitle" contenteditable="true" 
+        <div id="editableTitle" contenteditable="true" 
      style="position: absolute; top: 50px; left: 50%; transform: translateX(-50%); 
             font-size: 20px; font-weight: bold; text-align: center; cursor: text;
             z-index: 1000;">
@@ -104,13 +125,11 @@
 </div>
         <svg id="diagram" width="2000" height="2000"></svg>
     </div>
-
     <button id="addNodeBtn" class="control-btn">Add</button>
-
-
     <!-- Add this div for the Summary Table -->
     <div id="summaryTable"
         style="position: absolute; bottom: 60px; right: 60px; background: none; padding: 10px; cursor: grab; display: inline-block; z-index: 1;">
+        <button class="delete-table-btn" onclick="deleteTable('summaryTable')">❌</button>
         <h3 id="summaryHeader" style="margin: 5; cursor: grab;">Summary</h3>
         <table id="editableSummaryTable" style="border-collapse: collapse; text-align: left; width: auto;">
             <tr style="border-bottom: 1px solid gray;">
@@ -161,8 +180,6 @@
 
         </table>
     </div>
-
-
     <!-- Save Buttons -->
     <!-- Dropdowns for Paper Size and Orientation -->
     <!--  <label for="paperSize">Paper Size:</label>
@@ -184,12 +201,10 @@
     <button id="resetBtn" style="position: absolute; top: 15px; right: 240px; z-index: 1000;">Reset</button>
     <button id="savePngBtn" style="position: absolute; top: 15px; right: 135px; z-index: 1000;">Save as PNG</button>
     <button id="savePdfBtn" style="position: absolute; top: 15px; right: 30px; z-index: 1000;">Save as PDF</button>
-
     <script>
         document.getElementById("resetBtn").addEventListener("click", () => {
             location.reload();
         });
-
         document.getElementById("addNetworkBtn").addEventListener("click", function () {
             // Default position for the new node
             const newNode = {
@@ -203,8 +218,6 @@
             nodes.push(newNode);
             drawDiagram(); // Redraw to reflect changes
         });
-
-
 
     </script>
 
@@ -1576,6 +1589,7 @@
 
     <div id="legendTable"
         style="position: absolute; bottom: 60px; left: 50px; background: none; padding: 10px; cursor: grab; display: inline-block; z-index: 1;">
+        <button class="delete-table-btn" onclick="deleteTable('legendTable')">❌</button>
         <h3 id="legendHeader" style="margin: 5; cursor: grab;">Legend</h3>
         <table style="border-collapse: collapse; text-align: left; width: auto;">
             <tr style="border-bottom: 1px solid gray;">
@@ -1916,8 +1930,12 @@
             });
         });
 
-
-
+        function deleteTable(tableId) {
+        const tableElement = document.getElementById(tableId);
+        if (tableElement) {
+            tableElement.style.display = "none"; // 🔥 Instead of removing, just hide the table
+        }
+    }
 
 
     </script>
