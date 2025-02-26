@@ -2014,6 +2014,90 @@ window.onload = function () {
     <button id="thankYouBtn" style="margin-right: 10px;">Say Thank You</button>
     <button id="closePopupBtn">Not Now</button>
 </div>
+    <div id="userGuidePopup" style="display: none; position: fixed; top: 5%; left: 50%; transform: translate(-50%, 0%);
+    background: white; padding: 20px; box-shadow: 0px 4px 10px rgba(0,0,0,0.3); z-index: 1001; border-radius: 10px; 
+    width: 80%; height: 80%; overflow-y: auto;">
+    
+
+    <head>
+        <title>SLD Drawing Tool - User Guide</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.8;
+            }
+            .important-message {
+                text-align: center;
+                font-weight: bold;
+                color: red;
+                margin-top: 30px;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>SLD Drawing Tool - User Guide</h2>
+        <p>The <strong>SLD Drawing Tool</strong> is designed to create <strong>not-to-scale</strong> Single Line Diagrams (SLD) for electrical distribution networks.</p>
+    
+        <h3>Editing and Customizing Poles</h3>
+        <ul>
+            <li><strong>Drag a pole:</strong> To select and move it anywhere on the canvas.</li>
+            <li><strong>Click on a pole:</strong> To view "Add" and "Delete" options.</li>
+            <li><strong>Click on text inside pole:</strong> Edit text, 8m, 9m DP, etc.</li>
+            <li><strong>Click on text (E, S) below pole:</strong> Edit like 1E, 2S to mean 1 earthing, 2 Stay Set.</li>
+            <li><strong>Double-click a pole:</strong> To change the color of a pole to differentiate existing and proposed poles. Use the color picker to make poles the same color.</li>
+        </ul>
+    
+        <h3>Editing and Customizing Lines</h3>
+        <ul>
+            <li><strong>Click on text 'Label' on a line:</strong> Edit label, like 45m to mean span length or enter feeder name.</li>
+            <li><strong>Click on a line:</strong> To change the style of the line from solid to dotted.</li>
+            <li><strong>Click again on a line:</strong> To change the style of the line from dotted to crossed.</li>
+            <li><strong>Double-click on a line:</strong> To change the color of the line.</li>
+        </ul>
+    
+        <h3>Adding Other Elements to the SLD</h3>
+        <ul>
+            <li><strong>Add Text Box:</strong> Allows adding text annotations to create descriptions, custom legends, etc.</li>
+            <li><strong>Add Symbol:</strong> Allows adding some landmarks with symbols.</li>
+            <li><strong>Add New Network:</strong> Add a new isolated pole on the canvas, which can be extended to a new network by adding new poles by clicking on it.</li>
+            <li><strong>Add Signature:</strong> Add a resizable, rotatable, movable .png or .svg image for scanned signatures or custom landmarks.</li>
+            <li><strong>Draw Road:</strong> Select color, size (width of road), opacity, then click on the canvas to draw the road. Click "Stop Road" to end drawing.</li>
+        </ul>
+    
+        <h3>Importing / Exporting SLD</h3>
+        <ul>
+            <li><strong>Import SLD:</strong> Allows uploading diagrams as JSON.</li>
+            <li><strong>Export SLD:</strong> Allows exporting diagrams as JSON.</li>
+        </ul>
+    
+        <h3>Resetting Everything</h3>
+        <ul>
+            <li><strong>Reset:</strong> Refresh to the default page.</li>
+        </ul>
+    
+        <h3>Downloading Final Result in PDF/PNG</h3>
+        <ul>
+            <li><strong>Save as PNG:</strong> Download the diagram in landscape orientation in PNG format.</li>
+            <li><strong>Save as PDF:</strong> Download the diagram in landscape orientation in PDF format.</li>
+        </ul>
+    
+        <h3>Legend and Summary</h3>
+        <ul>
+            <li><strong>The legend table is movable and can be deleted.</strong></li>
+            <li><strong>The summary table is editable, movable, and can be deleted.</strong></li>
+        </ul>
+    
+        <h3>Contact & Support</h3>
+        <p>For questions or feedback, contact <a href="mailto:utility.dipankar@gmail.com">utility.dipankar@gmail.com</a>.</p>
+        
+        <p class="important-message">MINIMIZE USE OF PEN-PAPER TO CREATE / SHARE SLD. GREENER EARTH IS A COMMITMENT TO OUR FUTURE GENERATION.</p>
+    </body>
+    
+    
+    <!-- Close Button at the Bottom -->
+    <button id="closeUserGuide" style="margin-top: 20px; display: block; width: 100px; margin-left: auto; margin-right: auto;">OK</button>
+</div>
+
 
 </body>
 
