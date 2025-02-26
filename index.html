@@ -235,6 +235,7 @@
             });
 
         svg.call(zoom);
+        svg.on("dblclick.zoom", null);
 
         const addNodeBtn = document.getElementById("addNodeBtn");
         const deleteNodeBtn = document.getElementById("deleteNodeBtn");
