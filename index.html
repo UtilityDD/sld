@@ -84,20 +84,18 @@
 
     <div class="container">
 
-        <button id="menuBtn" style="position: fixed; top: 15px; left: 30px; z-index: 1000;">Symbol</button>
+        <button id="menuBtn" style="position: fixed; top: 15px; left: 34px; z-index: 1000;">Symbol</button>
         <button id="addTextBox" style="position: fixed; top: 15px; left: 100px; z-index: 1000;">Add Text Box</button>
         <button id="addNetworkBtn" style="position: fixed; top: 15px; left: 200px; z-index: 1000;">Add New
             Network</button>
-        <button id="addSignatureBtn" style="position: fixed; top: 15px; left: 330px; z-index: 1000;">Add
+        <button id="addSignatureBtn" style="position: fixed; top: 15px; left: 328px; z-index: 1000;">Add
             Signature</button>
         <input type="file" id="signatureInput" accept="image/png" style="display: none;">
-        <button id="drawRoadBtn" style="position: fixed; top: 15px; left: 450px; z-index: 1000;">Draw Road</button>
+        <button id="drawRoadBtn" style="position: fixed; top: 15px; left: 461px; z-index: 1000;">Draw Road</button>
 
+        <div id="menuList" 
+        style="display: none; position: absolute; top: 40px; left: 10px; background: white; padding: 10px; border: 1px solid #ddd; width: 160px; flex-wrap: wrap; gap: 5px 5px; row-gap: 5px;">
 
-
-
-        <div id="menuList"
-            style="display: none; position: absolute; top: 40px; left: 10px; background: white; padding: 10px; border: 1px solid #ddd;">
             <button class="symbolBtn" data-symbol="🌳">🌳</button>
             <button class="symbolBtn" data-symbol="🌴">🌴</button>
             <button class="symbolBtn" data-symbol="🕉️">🕉️</button>
@@ -105,7 +103,6 @@
             <button class="symbolBtn" data-symbol="🏫">🏫</button>
             <button class="symbolBtn" data-symbol="🏢">🏢</button>
             <button class="symbolBtn" data-symbol="🐟">🐟</button>
-            <button class="symbolBtn" data-symbol="🏁🏁🏁🏁🏁">🏁🏁🏁🏁🏁</button>
             <button class="symbolBtn" data-symbol="🏁">🏁</button>
             <button class="symbolBtn" data-symbol="💡">💡</button>
             <button class="symbolBtn" data-symbol="🏡">🏡</button>
@@ -197,7 +194,9 @@
         <option value="portrait">Portrait</option>
         <option value="landscape">Landscape</option>
     </select>  -->
-
+    <button id="importJsonBtn" style="position: absolute; top: 15px; right: 395px; z-index: 1000;  color: rgb(255, 34, 9);">Import SLD</button>
+<input type="file" id="importJsonInput" style="display: none;">
+    <button id="exportJsonBtn" style="position: absolute; top: 15px; right: 300px; z-index: 1000;color: rgb(0, 210, 88);">Export SLD</button>
     <button id="resetBtn" style="position: absolute; top: 15px; right: 240px; z-index: 1000;">Reset</button>
     <button id="savePngBtn" style="position: absolute; top: 15px; right: 135px; z-index: 1000;">Save as PNG</button>
     <button id="savePdfBtn" style="position: absolute; top: 15px; right: 30px; z-index: 1000;">Save as PDF</button>
@@ -234,8 +233,10 @@
                 container.attr("transform", event.transform);
             });
 
+
         svg.call(zoom);
         svg.on("dblclick.zoom", null);
+
 
         const addNodeBtn = document.getElementById("addNodeBtn");
         const deleteNodeBtn = document.getElementById("deleteNodeBtn");
@@ -257,9 +258,15 @@
 
 
         document.getElementById("menuBtn").addEventListener("click", () => {
-            const menuList = document.getElementById("menuList");
-            menuList.style.display = menuList.style.display === "none" ? "block" : "none";
-        });
+    const menuList = document.getElementById("menuList");
+
+    if (menuList.style.display === "none" || menuList.style.display === "") {
+        menuList.style.display = "flex"; // Show symbols in multiple rows
+    } else {
+        menuList.style.display = "none"; // Hide when clicked again
+    }
+});
+
 
         svg.on("click", (event) => {
             if (!drawingRoad) return;
@@ -1939,7 +1946,41 @@
             tableElement.style.display = "none"; // 🔥 Instead of removing, just hide the table
         }
     }
+    document.getElementById("exportJsonBtn").addEventListener("click", () => {
+    const exportData = {
+        nodes: nodes,
+        links: links
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "drawing.json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+});
 
+document.getElementById("importJsonBtn").addEventListener("click", () => {
+    document.getElementById("importJsonInput").click();
+});
+
+document.getElementById("importJsonInput").addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                const importData = JSON.parse(e.target.result);
+                nodes = importData.nodes || [];
+                links = importData.links || [];
+                drawDiagram(); // Refresh the drawing with imported data
+            } catch (error) {
+                alert("Invalid JSON file!");
+            }
+        };
+        reader.readAsText(file);
+    }
+});
 
     </script>
 
