@@ -194,6 +194,10 @@
         <option value="portrait">Portrait</option>
         <option value="landscape">Landscape</option>
     </select>  -->
+    <button id="infoBtn" style="position: absolute; top: 13px; right: 480px; z-index: 1000; 
+    background: rgba(255, 255, 0, 0); color: black; border: none; 
+    padding: 0px; cursor: pointer; font-size: 19px;">
+    ℹ️</button>
     <button id="importJsonBtn" style="position: absolute; top: 15px; right: 395px; z-index: 1000;  color: rgb(255, 34, 9);">Import SLD</button>
 <input type="file" id="importJsonInput" style="display: none;">
  <button id="exportJsonBtn" style="position: absolute; top: 15px; right: 300px; z-index: 1000; color: rgb(0, 210, 88);" title="Exports only nodes, line & symbols.">
@@ -1982,9 +1986,34 @@ document.getElementById("importJsonInput").addEventListener("change", function (
         reader.readAsText(file);
     }
 });
+window.onload = function () {
+    // Show popup when clicking the info button
+    document.getElementById("infoBtn").addEventListener("click", function () {
+        document.getElementById("infoPopup").style.display = "block";
+    });
+
+    // Close popup when clicking "Not Now"
+    document.getElementById("closePopupBtn").addEventListener("click", function () {
+        document.getElementById("infoPopup").style.display = "none";
+    });
+
+    // Open Gmail in a new tab when clicking "Say Thank You"
+    document.getElementById("thankYouBtn").addEventListener("click", function () {
+        window.open(
+            "https://mail.google.com/mail/?view=cm&fs=1&to=utility.dipankar@gmail.com&su=Thanks for the tool.&body=I appreciate your work!", 
+            "_blank"
+        );
+    });
+};
 
     </script>
-
+    
+<div id="infoPopup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: white; padding: 20px; box-shadow: 0px 4px 10px rgba(0,0,0,0.3); z-index: 1000; border-radius: 10px; text-align: center;">
+    <p>Created to draw not-to-scale SLD for electric distribution network.<br>Say thank you, if you like to use.</p>
+    <button id="thankYouBtn" style="margin-right: 10px;">Say Thank You</button>
+    <button id="closePopupBtn">Not Now</button>
+</div>
 
 </body>
 
