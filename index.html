@@ -918,11 +918,54 @@
                 });
 
             nodeElements.append("circle")
-                .attr("r", 20)
+    .attr("r", d => d.size || 20) // Maintain size after resizing
                 .attr("fill", d => d.text.match(/[\uD800-\uDFFF]/) ? "none" : d.color) // Transparent for symbols
                 .attr("stroke", "none");
 
+                let handle = nodeElements.filter(d => !d.text.match(/\p{Extended_Pictographic}/u))
+    .append("rect")
+    .attr("class", "resize-handle")
+    .attr("width", 10).attr("height", 10)
+    .attr("fill", "blue")
+    .style("cursor", "se-resize")
+    .style("display", "none"); // Hidden by default
 
+nodeElements.each(function (d) {
+    let nodeGroup = d3.select(this);
+    let hideTimeout;
+    
+    nodeGroup.on("mouseover", function () {
+        if (!d.text.match(/\p{Extended_Pictographic}/u)) {
+            clearTimeout(hideTimeout); // Prevent premature hiding
+            nodeGroup.select(".resize-handle").style("display", "block");
+        }
+    }).on("mouseleave", function () {
+        hideTimeout = setTimeout(() => {
+            nodeGroup.select(".resize-handle").style("display", "none");
+        }, 500); // Keep visible for 0.5 seconds after moving away
+    });
+
+    nodeGroup.select(".resize-handle")
+        .attr("x", d.size ? d.size - 5 : 15)
+        .attr("y", d.size ? d.size - 5 : 15); // Adjust handle position initially
+});
+
+handle.call(d3.drag()
+    .on("start", function () {
+        clearTimeout(hideTimeout); // Keep handle visible while dragging
+    })
+    .on("drag", function (event, d) {
+        let newSize = Math.max(10, event.x - d.x);
+        d.size = newSize;
+        d3.select(this.parentNode).select("circle").attr("r", newSize);
+        d3.select(this).attr("x", newSize - 5).attr("y", newSize - 5); // Adjust handle position dynamically
+    })
+    .on("end", function () {
+        hideTimeout = setTimeout(() => {
+            d3.select(this.parentNode).select(".resize-handle").style("display", "none");
+        }, 500); // Hide after 0.5 seconds when dragging stops
+    })
+);
 
             // Add labels to nodes
             nodeElements.append("g") // Group the text and the background rect
@@ -2000,7 +2043,7 @@ window.onload = function () {
     // Open Gmail in a new tab when clicking "Say Thank You"
     document.getElementById("thankYouBtn").addEventListener("click", function () {
         window.open(
-            "https://mail.google.com/mail/?view=cm&fs=1&to=dd@gmail.com&su=Thanks for the tool&body=I appreciate your work!", 
+            "https://mail.google.com/mail/?view=cm&fs=1&to=utility.dipankar@gmail.com&su=Thanks for the tool&body=I appreciate your work!", 
             "_blank"
         );
     });
