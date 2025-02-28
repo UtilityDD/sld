@@ -578,153 +578,262 @@
             }
 
 
-            // Draw links
-            // Draw links with toggling line type on click
-            // Define line styles
-            const lineStyles = [{
-                dasharray: "0", // Solid
-                crosses: false
-            },
-            {
-                dasharray: "5,5", // Dashed
-                crosses: false
-            },
-            {
-                dasharray: "20,10", // Dashed with crosses
-                crosses: true
-            }
-            ];
+        // Draw links with toggling line type on click
+// Define line styles
+const lineStyles = [{
+    dasharray: "0", // Solid
+    crosses: false,
+    wavy: false
+},
+{
+    dasharray: "0", // No dasharray for wavy
+    crosses: false,
+    wavy: true     // Wavy line replacing dashed
+},
+{
+    dasharray: "20,10", // Dashed with crosses
+    crosses: true,
+    wavy: false
+}
+];
 
-            // Function to create/update crosses for a line
-            function updateCrosses(lineElement) {
-                const line = d3.select(lineElement);
-                const data = line.datum();
-                const parent = d3.select(lineElement.parentNode);
+// Function to create/update crosses for a line
+function updateCrosses(lineElement) {
+    const line = d3.select(lineElement);
+    const data = line.datum();
+    const parent = d3.select(lineElement.parentNode);
 
-                // Get line coordinates
-                const x1 = parseFloat(line.attr("x1"));
-                const y1 = parseFloat(line.attr("y1"));
-                const x2 = parseFloat(line.attr("x2"));
-                const y2 = parseFloat(line.attr("y2"));
+    // Get line coordinates
+    const x1 = parseFloat(line.attr("x1"));
+    const y1 = parseFloat(line.attr("y1"));
+    const x2 = parseFloat(line.attr("x2"));
+    const y2 = parseFloat(line.attr("y2"));
 
-                // Calculate angle and length
-                const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-                const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    // Calculate angle and length
+    const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+    const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 
-                // Calculate cross positions
-                const spacing = 30; // pixels between crosses
-                const numCrosses = Math.floor(length / spacing);
-                const crosses = [];
+    // Calculate cross positions
+    const spacing = 30; // pixels between crosses
+    const numCrosses = Math.floor(length / spacing);
+    const crosses = [];
 
-                for (let i = 1; i <= numCrosses; i++) {
-                    const t = i / (numCrosses + 1);
-                    crosses.push({
-                        x: x1 + (x2 - x1) * t,
-                        y: y1 + (y2 - y1) * t,
-                        angle: angle
-                    });
-                }
+    for (let i = 1; i <= numCrosses; i++) {
+        const t = i / (numCrosses + 1);
+        crosses.push({
+            x: x1 + (x2 - x1) * t,
+            y: y1 + (y2 - y1) * t,
+            angle: angle
+        });
+    }
 
-                // Select or create cross group
-                let crossGroup = parent.select(`.crosses-${data.source}-${data.target}`);
-                if (crossGroup.empty()) {
-                    crossGroup = parent.append("g")
-                        .attr("class", `crosses-${data.source}-${data.target}`);
-                }
+    // Select or create cross group
+    let crossGroup = parent.select(`.crosses-${data.source}-${data.target}`);
+    if (crossGroup.empty()) {
+        crossGroup = parent.append("g")
+            .attr("class", `crosses-${data.source}-${data.target}`);
+    }
 
-                // Update crosses
-                const crossElements = crossGroup.selectAll(".cross")
-                    .data(crosses);
+    // Update crosses
+    const crossElements = crossGroup.selectAll(".cross")
+        .data(crosses);
 
-                // Remove old crosses
-                crossElements.exit().remove();
+    // Remove old crosses
+    crossElements.exit().remove();
 
-                // Create new crosses
-                const crossEnter = crossElements.enter()
-                    .append("g")
-                    .attr("class", "cross");
+    // Create new crosses
+    const crossEnter = crossElements.enter()
+        .append("g")
+        .attr("class", "cross");
 
-                // Add cross lines
-                crossEnter.append("line")
-                    .attr("class", "cross-line")
-                    .attr("x1", -4)
-                    .attr("y1", -4)
-                    .attr("x2", 4)
-                    .attr("y2", 4)
-                    .attr("stroke", line.attr("stroke"))
-                    .attr("stroke-width", 2);
+    // Add cross lines
+    crossEnter.append("line")
+        .attr("class", "cross-line")
+        .attr("x1", -4)
+        .attr("y1", -4)
+        .attr("x2", 4)
+        .attr("y2", 4)
+        .attr("stroke", line.attr("stroke"))
+        .attr("stroke-width", 2);
 
-                crossEnter.append("line")
-                    .attr("class", "cross-line")
-                    .attr("x1", -4)
-                    .attr("y1", 4)
-                    .attr("x2", 4)
-                    .attr("y2", -4)
-                    .attr("stroke", line.attr("stroke"))
-                    .attr("stroke-width", 2);
+    crossEnter.append("line")
+        .attr("class", "cross-line")
+        .attr("x1", -4)
+        .attr("y1", 4)
+        .attr("x2", 4)
+        .attr("y2", -4)
+        .attr("stroke", line.attr("stroke"))
+        .attr("stroke-width", 2);
 
-                // Update all crosses
-                const allCrosses = crossElements.merge(crossEnter);
-                allCrosses.attr("transform", d => `translate(${d.x},${d.y}) rotate(${d.angle})`);
-            }
+    // Update all crosses
+    const allCrosses = crossElements.merge(crossEnter);
+    allCrosses.attr("transform", d => `translate(${d.x},${d.y}) rotate(${d.angle})`);
+}
 
-            // Update line and its crosses
-            function updateLineAndCrosses(lineElement) {
-                const line = d3.select(lineElement);
-                const data = line.datum();
+// Function to create/update wavy line
+function updateWavyLine(lineElement) {
+    const line = d3.select(lineElement);
+    const data = line.datum();
+    const parent = d3.select(lineElement.parentNode);
 
-                // Update line position
-                line
-                    .attr("x1", d => nodes.find(n => n.id === d.source).x)
-                    .attr("y1", d => nodes.find(n => n.id === d.source).y)
-                    .attr("x2", d => nodes.find(n => n.id === d.target).x)
-                    .attr("y2", d => nodes.find(n => n.id === d.target).y);
+    // Get line coordinates
+    const x1 = parseFloat(line.attr("x1"));
+    const y1 = parseFloat(line.attr("y1"));
+    const x2 = parseFloat(line.attr("x2"));
+    const y2 = parseFloat(line.attr("y2"));
 
-                // Update crosses if style includes them
-                if (lineStyles[data.styleIndex].crosses) {
-                    updateCrosses(lineElement);
-                }
-            }
+    // Calculate length and angle
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    
+    // Wavy line parameters
+    const amplitude = 3;
+    const frequency = 20;
+    const numPoints = Math.ceil(length / 3); // 5 pixels between points
 
-            // Create and update lines
-            container.selectAll(".line")
-                .data(links)
-                .enter()
-                .append("line")
-                .attr("class", "line")
-                .attr("stroke", d => d.color || "black")
-                .attr("stroke-width", 2)
-                .attr("x1", d => nodes.find(n => n.id === d.source).x)
-                .attr("y1", d => nodes.find(n => n.id === d.source).y)
-                .attr("x2", d => nodes.find(n => n.id === d.target).x)
-                .attr("y2", d => nodes.find(n => n.id === d.target).y)
-                .each(function (d) {
-                    if (d.styleIndex === undefined) d.styleIndex = 0;
-                    const line = d3.select(this);
-                    line.attr("stroke-dasharray", lineStyles[d.styleIndex].dasharray);
-                    if (lineStyles[d.styleIndex].crosses) {
-                        updateCrosses(this);
-                    }
-                })
-                .style("cursor", "pointer")
-                .on("click", function (event, d) {
-                    // Remove existing crosses
-                    const parent = d3.select(this.parentNode);
-                    parent.select(`.crosses-${d.source}-${d.target}`).remove();
+    // Generate points for wavy path
+    const points = [];
+    for (let i = 0; i <= numPoints; i++) {
+        const t = i / numPoints;
+        const x = t * length;
+        const y = amplitude * Math.sin((x / frequency) * 2 * Math.PI);
+        points.push([x, y]);
+    }
 
-                    // Update style
-                    d.styleIndex = (d.styleIndex + 1) % lineStyles.length;
+ // Select or create wavy path group
+ let wavyGroup = parent.select(`.wavy-${data.source}-${data.target}`);
+    if (wavyGroup.empty()) {
+        wavyGroup = parent.insert("g", ":first-child") // Insert at the beginning (before nodes)
+            .attr("class", `wavy-${data.source}-${data.target}`);
+    }
 
-                    // Apply new style
-                    const line = d3.select(this);
-                    line.attr("stroke-dasharray", lineStyles[d.styleIndex].dasharray);
+    // Create path string
+    const pathData = d3.line()(points);
 
-                    // Add crosses if needed
-                    if (lineStyles[d.styleIndex].crosses) {
-                        updateCrosses(this);
-                    }
-                })
+    // Update or create path
+    let wavyPath = wavyGroup.select("path");
+    if (wavyPath.empty()) {
+        wavyPath = wavyGroup.append("path")
+            .attr("class", "wavy-path")
+            .attr("stroke", line.attr("stroke"))
+            .attr("stroke-width", 2)
+            .attr("fill", "none")
+            .style("cursor", "pointer")
+            .on("click", function() {
+                // Trigger the same click handler as the original line
+                const originalLine = d3.select(`line.line[data-source="${data.source}"][data-target="${data.target}"]`);
+                const event = new Event('click');
+                originalLine.node().dispatchEvent(event);
+            });
+    } else {
+        // Update existing path
+        wavyPath
+            .attr("stroke", line.attr("stroke"))
+            .attr("stroke-width", 2)
+            .attr("fill", "none");
+    }
 
+    // Position and rotate the path
+    wavyPath.attr("d", pathData)
+        .attr("transform", `translate(${x1},${y1}) rotate(${angle})`);
+
+    // Ensure the wavy line is behind the nodes by reordering elements
+    wavyGroup.lower();
+
+    // Hide the original straight line but keep it for data binding
+    line.style("opacity", "0");
+}
+
+
+
+// Update line and its crosses/waves
+function updateLineAndCrosses(lineElement) {
+    const line = d3.select(lineElement);
+    const data = line.datum();
+
+    // Update line position
+    line
+        .attr("x1", d => nodes.find(n => n.id === d.source).x)
+        .attr("y1", d => nodes.find(n => n.id === d.source).y)
+        .attr("x2", d => nodes.find(n => n.id === d.target).x)
+        .attr("y2", d => nodes.find(n => n.id === d.target).y)
+        // Add data attributes to help identify this line later
+        .attr("data-source", d => d.source)
+        .attr("data-target", d => d.target);
+
+    // Update crosses if style includes them
+    if (lineStyles[data.styleIndex].crosses) {
+        updateCrosses(lineElement);
+    }
+
+    // Update wavy line if style is wavy
+    if (lineStyles[data.styleIndex].wavy) {
+        updateWavyLine(lineElement);
+    } else {
+        // Show the straight line when not wavy
+        line.style("opacity", "1");
+        // Remove wavy path if exists
+        const parent = d3.select(lineElement.parentNode);
+        parent.select(`.wavy-${data.source}-${data.target}`).remove();
+    }
+}
+
+// Create and update lines
+container.selectAll(".line")
+    .data(links)
+    .enter()
+    .append("line")
+    .attr("class", "line")
+    .attr("stroke", d => d.color || "black")
+    .attr("stroke-width", 2)
+    .attr("x1", d => nodes.find(n => n.id === d.source).x)
+    .attr("y1", d => nodes.find(n => n.id === d.source).y)
+    .attr("x2", d => nodes.find(n => n.id === d.target).x)
+    .attr("y2", d => nodes.find(n => n.id === d.target).y)
+    .attr("data-source", d => d.source) // Add data attributes to help identify this line later
+    .attr("data-target", d => d.target)
+    .each(function (d) {
+        if (d.styleIndex === undefined) d.styleIndex = 0;
+        const line = d3.select(this);
+        line.attr("stroke-dasharray", lineStyles[d.styleIndex].dasharray);
+        
+        if (lineStyles[d.styleIndex].crosses) {
+            updateCrosses(this);
+        }
+        
+        if (lineStyles[d.styleIndex].wavy) {
+            updateWavyLine(this);
+        }
+    })
+    .style("cursor", "pointer")
+    .on("click", function (event, d) {
+        // Remove existing crosses and wavy lines
+        const parent = d3.select(this.parentNode);
+        parent.select(`.crosses-${d.source}-${d.target}`).remove();
+        parent.select(`.wavy-${d.source}-${d.target}`).remove();
+
+        // Show the line (in case it was hidden by wavy style)
+        d3.select(this).style("opacity", "1");
+
+        // Update style
+        d.styleIndex = (d.styleIndex + 1) % lineStyles.length;
+
+        // Apply new style
+        const line = d3.select(this);
+        line.attr("stroke-dasharray", lineStyles[d.styleIndex].dasharray);
+
+        // Add crosses if needed
+        if (lineStyles[d.styleIndex].crosses) {
+            updateCrosses(this);
+        }
+        
+        // Add wavy line if needed
+        if (lineStyles[d.styleIndex].wavy) {
+            updateWavyLine(this);
+        }
+    })
 
                 .on("dblclick", function (event, d) {
                     // Create a color input element
