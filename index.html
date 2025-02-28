@@ -15,6 +15,7 @@
         body {
             font-family: Arial, sans-serif;
             overflow: hidden;
+            font-size: 13px;
         }
 
         body,
@@ -199,9 +200,14 @@
         <option value="portrait">Portrait</option>
         <option value="landscape">Landscape</option>
     </select>  -->
-    <button id="infoBtn" style="position: absolute; top: 13px; right: 480px; z-index: 1000; 
+    <button id="legendBtn" style="position: absolute; top: 15px; right: 480px; z-index: 1000; 
     background: rgba(255, 255, 0, 0); color: black; border: none; 
-    padding: 0px; cursor: pointer; font-size: 19px;">
+    padding: 0px; cursor: pointer; font-size: 18px;">
+    📋
+</button>
+    <button id="infoBtn" style="position: absolute; top: 15px; right: 520px; z-index: 1000; 
+    background: rgba(255, 255, 0, 0); color: black; border: none; 
+    padding: 0px; cursor: pointer; font-size: 18px;">
     ℹ️</button>
     <button id="importJsonBtn" style="position: absolute; top: 15px; right: 395px; z-index: 1000;  color: rgb(255, 34, 9);">Import SLD</button>
 <input type="file" id="importJsonInput" style="display: none;">
@@ -376,20 +382,13 @@
         function drawDiagram() {
             container.selectAll("*").rem
             container.selectAll(".node, .line, .link-label").remove(); // Remove only nodes, lines, and labels
-
-
-
-
             let drawingRoad = false;
             let roadColor = "#d2b746";
             let roadWidth = 23;
             let roadSegments = [];
             let deleteTimeout = null;
-
             const drawRoadBtn = document.getElementById("drawRoadBtn");
             const roadLayer = container.insert("g", ":first-child").attr("id", "roadLayer");
-
-
             const opacitySlider = document.createElement("input");
             opacitySlider.type = "range";
             opacitySlider.min = 0.1;
@@ -415,9 +414,6 @@
             tooltip.style.fontSize = "12px";
             tooltip.style.pointerEvents = "none"; // Prevent interaction
             document.body.appendChild(tooltip);
-
-
-
 
             drawRoadBtn.addEventListener("click", () => {
                 drawingRoad = !drawingRoad;
@@ -525,7 +521,6 @@
                     segment.x += dx;
                     segment.y += dy;
                 });
-
 
                 opacitySlider.addEventListener("input", () => {
                     d3.selectAll(".road-line").attr("stroke-opacity", opacitySlider.value);
@@ -1758,90 +1753,157 @@ handle.call(d3.drag()
         }
     </script>
     <!-- Your existing content -->
-
     <div id="legendTable"
-        style="position: absolute; bottom: 60px; left: 50px; background: none; padding: 10px; cursor: grab; display: inline-block; z-index: 1;">
-        <button class="delete-table-btn" onclick="deleteTable('legendTable')">❌</button>
-        <h3 id="legendHeader" style="margin: 5; cursor: grab;">Legend</h3>
-        <table style="border-collapse: collapse; text-align: left; width: auto;">
-            <tr style="border-bottom: 1px solid gray;">
-                <th>Text/Symbol⠀⠀</th>
-                <th>Meaning</th>
-            </tr>
-            <tr style="border-bottom: 1px solid gray;">
-                <td>DTR</td>
-                <td>Transformer Structure</td>
-            </tr>
-            <tr style="border-bottom: 1px solid gray;">
-                <td>DP</td>
-                <td>Double Pole</td>
-            </tr>
-            <tr style="border-bottom: 1px solid gray;">
-                <td>TP</td>
-                <td>Triple Pole</td>
-            </tr>
-            <tr style="border-bottom: 1px solid gray;">
-                <td>4P</td>
-                <td>Four Pole</td>
-            </tr>
-            <tr style="border-bottom: 1px solid gray;">
-                <td>HP</td>
-                <td>H Beam Pole</td>
-            </tr>
-            <tr style="border-bottom: 1px solid gray;">
-                <td>RP</td>
-                <td>Rail Pole</td>
-            </tr>
-            <tr style="border-bottom: 1px solid gray;">
-                <td>E</td>
-                <td>Earthing</td>
-            </tr>
-            <tr style="border-bottom: 1px solid gray;">
-                <td>S</td>
-                <td>Stay Set</td>
-            </tr>
-            <tr style="border-bottom: 1px solid gray;">
-                <td>8m</td>
-                <td>8m Pole</td>
-            </tr>
-            <tr style="border-bottom: 1px solid gray;">
+    
+    style="position: absolute; bottom: 60px; left: 50px; background: none; padding: 10px; cursor: grab; display: inline-block; z-index: 1;">
+    <button class="delete-table-btn" onclick="deleteTable('legendTable')">❌</button>
+    <h3 id="legendHeader" style="margin: 5; cursor: grab;">Legend</h3>
+    <table style="border-collapse: collapse; text-align: left; width: auto;">
+
+            <th>Text/Symbol⠀⠀</th>
+            <th>Meaning</th>
+        </tr>
+        <tr style="border-bottom: 1px solid gray;">
+            <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+onmouseout="this.querySelector('.hide-btn').style.display='none';">
+            <td>DTR</td>
+            <td>Transformer Structure</td>
+            <td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
+        </tr>
+        <tr style="border-bottom: 1px solid gray;">
+            <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+            onmouseout="this.querySelector('.hide-btn').style.display='none';">
+            <td>DP</td>
+            <td>Double Pole</td>
+            <td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
+        </tr>
+        <tr style="border-bottom: 1px solid gray;">
+            <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+            onmouseout="this.querySelector('.hide-btn').style.display='none';">
+            <td>TP</td>
+            <td>Triple Pole</td>
+            <td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
+        </tr>
+        <tr style="border-bottom: 1px solid gray;">
+            <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+            onmouseout="this.querySelector('.hide-btn').style.display='none';">
+            <td>4P</td>
+            <td>Four Pole</td>
+            <td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
+        </tr>
+        <tr style="border-bottom: 1px solid gray;">
+            <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+            onmouseout="this.querySelector('.hide-btn').style.display='none';">
+            <td>HP</td>
+            <td>H Beam Pole</td>
+            <td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
+        </tr>
+        <tr style="border-bottom: 1px solid gray;">
+            <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+            onmouseout="this.querySelector('.hide-btn').style.display='none';">
+            <td>RP</td>
+            <td>Rail Pole</td>
+            <td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
+        </tr>
+        <tr style="border-bottom: 1px solid gray;">
+            <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+            onmouseout="this.querySelector('.hide-btn').style.display='none';">
+            <td>E</td>
+            <td>Earthing</td>
+            <td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
+        </tr>
+        <tr style="border-bottom: 1px solid gray;">
+            <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+            onmouseout="this.querySelector('.hide-btn').style.display='none';">
+            <td>S</td>
+            <td>Stay Set</td>
+            <td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
+        </tr>
+        <tr style="border-bottom: 1px solid gray;">
+            <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+            onmouseout="this.querySelector('.hide-btn').style.display='none';">
+            <td>C</td>
+            <td>Service Connection</td>
+            <td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
+        </tr>
+        <tr style="border-bottom: 1px solid gray;">
+            <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+            onmouseout="this.querySelector('.hide-btn').style.display='none';">
+            <td>X</td>
+            <td>Extension of pole</td>
+            <td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
+        </tr>
+        <tr style="border-bottom: 1px solid gray;">
+            <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+            onmouseout="this.querySelector('.hide-btn').style.display='none';">
+            <td>8m</td>
+            <td>8m Pole</td>
+            <td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
+        </tr>
+        <tr style="border-bottom: 1px solid gray;">
+            <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+                onmouseout="this.querySelector('.hide-btn').style.display='none';">
                 <td>9m</td>
                 <td>9m Pole</td>
+                <td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
             </tr>
-            <tr style="border-bottom: 1px solid gray;">
+        </tr>
+    
+        <tr style="border-bottom: 1px solid gray;">
+            <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+                onmouseout="this.querySelector('.hide-btn').style.display='none';">
                 <td>—X—X—</td>
-                <td>Craddle Guard</td>
+                <td>Cradle Guard</td>
+                <td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
             </tr>
-            <tr class="legend-row"><td><svg width="50" height="10"><path d="M0,5 Q5,0 10,5 T20,5 T30,5" stroke="black" fill="transparent" stroke-width="2"/></svg></td><td>AB Cable</td></tr>
-            <tr style="border-bottom: 1px solid gray;">
-        </table>
-    </div>
+        </tr>
+    
+        <tr style="border-bottom: 1px solid gray;">
+            <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+                onmouseout="this.querySelector('.hide-btn').style.display='none';">
+                <td>
+                    <svg width="50" height="10">
+                        <path d="M0,5 Q5,0 10,5 T20,5 T30,5" stroke="black" fill="transparent" stroke-width="2"/>
+                    </svg>
+                </td>
+                <td>AB Cable</td>
+                <td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
+                <tr style="border-bottom: 1px solid gray;">
+            </tr>
+        </tr>
+    </table>
+</div>
 
-    <script>
-        // Make the table draggable only when clicking on the "Legend" header
-        const legendTable = document.getElementById("legendTable");
-        const legendHeader = document.getElementById("legendHeader");
-        let isDragging = false, offsetX, offsetY;
+<script>
+    // Make the table draggable only when clicking on the "Legend" header
+    const legendTable = document.getElementById("legendTable");
+    const legendHeader = document.getElementById("legendHeader");
+    let isDragging = false, offsetX, offsetY;
 
-        legendTable.addEventListener("mousedown", (event) => {
-            isDragging = true;
-            legendTable.style.cursor = "grabbing";
-            offsetX = event.clientX - legendTable.getBoundingClientRect().left;
-            offsetY = event.clientY - legendTable.getBoundingClientRect().top;
-            event.stopPropagation(); // Prevent canvas panning
-        });
+    legendTable.addEventListener("mousedown", (event) => {
+        isDragging = true;
+        legendTable.style.cursor = "grabbing";
+        offsetX = event.clientX - legendTable.getBoundingClientRect().left;
+        offsetY = event.clientY - legendTable.getBoundingClientRect().top;
+        event.stopPropagation(); // Prevent canvas panning
+    });
 
-        document.addEventListener("mousemove", (event) => {
-            if (isDragging) {
-                legendTable.style.left = event.clientX - offsetX + "px";
-                legendTable.style.top = event.clientY - offsetY + "px";
-            }
-        });
+    document.addEventListener("mousemove", (event) => {
+        if (isDragging) {
+            legendTable.style.left = event.clientX - offsetX + "px";
+            legendTable.style.top = event.clientY - offsetY + "px";
+        }
+    });
 
-        document.addEventListener("mouseup", () => {
-            isDragging = false;
-            legendTable.style.cursor = "grab";
-        });
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+        legendTable.style.cursor = "grab";
+    });
+
+    function hideRow(button) {
+button.closest("tr").style.display = "none";
+}
+
 
         // Add this JavaScript code
         // Add this JavaScript code
@@ -2104,12 +2166,32 @@ handle.call(d3.drag()
             });
         });
 
-        function deleteTable(tableId) {
-        const tableElement = document.getElementById(tableId);
-        if (tableElement) {
-            tableElement.style.display = "none"; // 🔥 Instead of removing, just hide the table
-        }
+ // Store the original table content when the page loads
+document.addEventListener("DOMContentLoaded", function () {
+    const legendTable = document.getElementById("legendTable");
+    legendTable.dataset.originalHTML = legendTable.innerHTML; // Save initial table content
+});
+
+function deleteTable(tableId) {
+    const tableElement = document.getElementById(tableId);
+    if (tableElement) {
+        tableElement.style.display = "none"; // Hide instead of delete
     }
+}
+
+// Toggle Legend Visibility when clicking the Legend Button
+document.getElementById("legendBtn").addEventListener("click", function () {
+    const legendTable = document.getElementById("legendTable");
+
+    if (legendTable.style.display === "none") {
+        legendTable.style.display = "block"; // Show if hidden
+        legendTable.innerHTML = legendTable.dataset.originalHTML; // Restore default table content
+    } else {
+        legendTable.style.display = "none"; // Hide if visible
+    }
+});
+
+
     document.getElementById("exportJsonBtn").addEventListener("click", () => {
     const exportData = {
         nodes: nodes,
