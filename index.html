@@ -1823,7 +1823,7 @@ handle.call(d3.drag()
         const legendHeader = document.getElementById("legendHeader");
         let isDragging = false, offsetX, offsetY;
 
-        legendHeader.addEventListener("mousedown", (event) => {
+        legendTable.addEventListener("mousedown", (event) => {
             isDragging = true;
             legendTable.style.cursor = "grabbing";
             offsetX = event.clientX - legendTable.getBoundingClientRect().left;
