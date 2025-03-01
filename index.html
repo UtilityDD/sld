@@ -636,28 +636,22 @@ onmouseout="this.querySelector('.hide-btn').style.display='none';">
 
         // Draw links with toggling line type on click
 // Define line styles
-const lineStyles = [{
-    dasharray: "0", // Solid
-    crosses: false,
-    wavy: false
-},
-{
-    dasharray: "0", // No dasharray for wavy
-    crosses: false,
-    wavy: true     // Wavy line replacing dashed
-},
-{
-    dasharray: "20,10", // Dashed with crosses
-    crosses: true,
-    wavy: false
-}
+const lineStyles = [
+    { dasharray: "0", crosses: false, wavy: false }, // Solid
+    { dasharray: "0", crosses: false, wavy: true },  // Wavy
+    { dasharray: "0", crosses: true, wavy: false },  // Solid with crosses (╳)
+    { dasharray: "0", crosses: true, wavy: false, symbol: "⊢" }, // Solid with ⑴
+    { dasharray: "0", crosses: true, wavy: false, symbol: "⊩" }, // Solid with ⑵
+    { dasharray: "0", crosses: true, wavy: false, symbol: "⊪" }  // Solid with ⑶
 ];
+
 
 // Function to create/update crosses for a line
 function updateCrosses(lineElement) {
     const line = d3.select(lineElement);
     const data = line.datum();
     const parent = d3.select(lineElement.parentNode);
+    const style = lineStyles[data.styleIndex];
 
     // Get line coordinates
     const x1 = parseFloat(line.attr("x1"));
@@ -670,7 +664,7 @@ function updateCrosses(lineElement) {
     const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 
     // Calculate cross positions
-    const spacing = 30; // pixels between crosses
+    const spacing = 30;
     const numCrosses = Math.floor(length / spacing);
     const crosses = [];
 
@@ -679,7 +673,8 @@ function updateCrosses(lineElement) {
         crosses.push({
             x: x1 + (x2 - x1) * t,
             y: y1 + (y2 - y1) * t,
-            angle: angle
+            angle: angle,
+            symbol: style.symbol || "☓"  // Use ⑴, ⑵, ⑶, or default to ╳
         });
     }
 
@@ -694,37 +689,25 @@ function updateCrosses(lineElement) {
     const crossElements = crossGroup.selectAll(".cross")
         .data(crosses);
 
-    // Remove old crosses
     crossElements.exit().remove();
 
-    // Create new crosses
     const crossEnter = crossElements.enter()
         .append("g")
         .attr("class", "cross");
 
-    // Add cross lines
-    crossEnter.append("line")
-        .attr("class", "cross-line")
-        .attr("x1", -4)
-        .attr("y1", -4)
-        .attr("x2", 4)
-        .attr("y2", 4)
-        .attr("stroke", line.attr("stroke"))
-        .attr("stroke-width", 2);
+    crossEnter.append("text")
+        .attr("class", "cross-symbol")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("font-size", "16px")
+        .attr("fill", line.attr("stroke"))
+        .text(d => d.symbol);
 
-    crossEnter.append("line")
-        .attr("class", "cross-line")
-        .attr("x1", -4)
-        .attr("y1", 4)
-        .attr("x2", 4)
-        .attr("y2", -4)
-        .attr("stroke", line.attr("stroke"))
-        .attr("stroke-width", 2);
-
-    // Update all crosses
+    // Update positions
     const allCrosses = crossElements.merge(crossEnter);
     allCrosses.attr("transform", d => `translate(${d.x},${d.y}) rotate(${d.angle})`);
 }
+
 
 // Function to create/update wavy line
 function updateWavyLine(lineElement) {
@@ -905,18 +888,22 @@ container.selectAll(".line")
 
                     // Update color on selection
                     colorPicker.addEventListener("input", () => {
-                        d.color = colorPicker.value;
-                        const line = d3.select(this);
-                        line.attr("stroke", d.color);
+    d.color = colorPicker.value;
+    const line = d3.select(event.target); // Use event.target to ensure correct element selection
+    line.attr("stroke", d.color);
 
-                        // Update crosses color if they exist
-                        if (lineStyles[d.styleIndex].crosses) {
-                            const parent = d3.select(this.parentNode);
-                            parent.select(`.crosses-${d.source}-${d.target}`)
-                                .selectAll(".cross-line")
-                                .attr("stroke", d.color);
-                        }
-                    });
+    const parent = d3.select(line.node().parentNode);
+
+    // Update crosses color
+    parent.select(`.crosses-${d.source}-${d.target}`)
+        .selectAll(".cross-symbol") // Update text elements, not non-existent "cross-line"
+        .attr("fill", d.color);
+
+    // Update wavy line color if exists
+    parent.select(`.wavy-${d.source}-${d.target}`)
+        .select("path")
+        .attr("stroke", d.color);
+});
 
                     // Remove color picker when focus is lost
                     colorPicker.addEventListener("blur", () => {
