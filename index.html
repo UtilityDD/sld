@@ -2014,6 +2014,20 @@ onmouseout="this.querySelector('.hide-btn').style.display='none';">
     </div>
 
     <script>
+
+         function openColorPicker(element) {
+    let colorInput = element.nextElementSibling;
+    colorInput.style.display = "block";
+    colorInput.focus(); // Ensures the input is active
+    colorInput.click();
+}
+
+function changeColor(input) {
+    let svg = input.previousElementSibling;
+    let rect = svg.querySelector("rect");
+    rect.setAttribute("fill", input.value);
+    input.style.display = "none"; // Hide after selection
+}
 // Function to enable dragging for a given table
 function makeTableDraggable(tableId) {
     const table = document.getElementById(tableId);
