@@ -1811,6 +1811,42 @@ handle.call(d3.drag()
                 <th>Text/Symbol⠀⠀</th>
                 <th>Meaning</th>
             </tr>
+                        <tr style="border-bottom: 1px solid gray;"></tr>
+            <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+        onmouseout="this.querySelector('.hide-btn').style.display='none';">
+        <td>
+            <svg width="50" height="10" onclick="openColorPicker(this)" style="cursor: pointer;">
+                <rect width="50" height="10" fill="grey" />
+            </svg>
+            <input type="color" style="display: none;" onchange="changeColor(this)"/>
+        </td>
+        <td contenteditable="true">Existing network (✒️)</td>
+        <td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
+    </tr>
+    <tr style="border-bottom: 1px solid gray;"></tr>
+    <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+onmouseout="this.querySelector('.hide-btn').style.display='none';">
+<td>
+    <svg width="50" height="10" onclick="openColorPicker(this)" style="cursor: pointer;">
+        <rect width="50" height="10" fill="red" />
+    </svg>
+    <input type="color" style="display: none;" onchange="changeColor(this)"/>
+</td>
+<td contenteditable="true">Proposed network (✒️)</td>
+<td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
+</tr>
+<tr style="border-bottom: 1px solid gray;"></tr>
+<tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
+onmouseout="this.querySelector('.hide-btn').style.display='none';">
+<td>
+<svg width="50" height="10" onclick="openColorPicker(this)" style="cursor: pointer;">
+    <rect width="50" height="10" fill="blue" />
+</svg>
+<input type="color" style="display: none;" onchange="changeColor(this)"/>
+</td>
+<td contenteditable="true">33kV/11kV/LT (✒️)</td>
+<td><button class="hide-btn" style="display: none;" onclick="hideRow(this)">❌</button></td>
+</tr>
             <tr style="border-bottom: 1px solid gray;">
                 <tr class="legend-row" onmouseover="this.querySelector('.hide-btn').style.display='inline';" 
     onmouseout="this.querySelector('.hide-btn').style.display='none';">
